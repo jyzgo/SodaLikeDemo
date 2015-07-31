@@ -4,10 +4,55 @@ using System.Collections;
 
 public class CellScript : MonoBehaviour {
 
+	[SerializeField, SetProperty("CellColor")]
+	private CellColor _cellColor;
 	public CellColor cellColor { 
-		set;
-		get;
+		set
+		{
+			if(_cellColor != value)
+			{
+				_cellColor = value;
+				updateCell();
+			}
 
+		}
+		get
+		{
+			return _cellColor;
+		}
+
+	}
+
+	void updateCell()
+	{
+		if (_cellColor != CellColor.None && _cellType != CellType.None) {
+
+			string spritePath = _cellType.ToString() + _cellColor.ToString();
+
+			Sprite newSprite = Resources.Load("Sprite/Cells/"+spritePath,typeof(Sprite)) as Sprite;
+			GetComponent<SpriteRenderer>().sprite = newSprite;
+			
+		} else {
+
+		
+		}
+
+	}
+
+	[SerializeField, SetProperty("CellType")]
+	private CellType _cellType;
+	public CellType cellType {
+		set
+		{
+			if(_cellType != value){
+				_cellType = value;
+				updateCell();
+			}
+		}
+		get
+		{
+			return _cellType;
+		}
 	}
 
 	public int cellRow
@@ -15,6 +60,7 @@ public class CellScript : MonoBehaviour {
 		set;
 		get;
 	}
+
 	public int cellCol {
 		set;
 		get;

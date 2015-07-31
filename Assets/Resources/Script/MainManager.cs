@@ -5,9 +5,7 @@ using System.Collections.Generic;
 public class MainManager : MonoBehaviour {
 
 	public static MainManager instance;
-
-
-
+	
 	GameObject _cellHolder;
 
 	public GridsManager mainGrids;
@@ -21,7 +19,7 @@ public class MainManager : MonoBehaviour {
 
 	CellType genCellType()
 	{
-		CellType curType = (CellType)0;//(int)Random.Range (0, 1);
+		CellType curType = CellType.Brick;//(int)Random.Range (0, 1);
 
 		return curType;
 	}
@@ -56,11 +54,13 @@ public class MainManager : MonoBehaviour {
 
 		var curColor = genCellColor ();
 		var curType = genCellType ();
-		string cellPath = ResPath.CellPrefab + curType.ToString () + curColor.ToString ();
+		string cellPath = ResPath.CellPrefab+"Cell";
 
 		GameObject cell = (GameObject)Instantiate(Resources.Load(cellPath,typeof(GameObject)));
 		var sc = cell.GetComponent<CellScript> ();
 		sc.cellColor = curColor;
+		sc.cellType = curType;
+
 		cell.transform.parent = _cellHolder.transform;
 		
 		return cell;
@@ -71,6 +71,8 @@ public class MainManager : MonoBehaviour {
 		mainGrids = new GridsManager();
 
 		_cellHolder = GameObject.Find ("CellHolder");
+
+
 
 		for (int row = 0; row < Constants.MAX_ROWS; ++row) 
 		{
@@ -86,12 +88,7 @@ public class MainManager : MonoBehaviour {
 			
 		}
 	}
-
-
-
-
-
-
+	
 
 	void Awake()
 	{	

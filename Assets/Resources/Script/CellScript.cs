@@ -12,7 +12,7 @@ public class CellScript : MonoBehaviour {
 			if(_cellColor != value)
 			{
 				_cellColor = value;
-				updateCell();
+
 			}
 
 		}
@@ -21,6 +21,13 @@ public class CellScript : MonoBehaviour {
 			return _cellColor;
 		}
 
+	}
+
+	public void init(CellColor curCorlor,CellType curType)
+	{
+		cellColor = curCorlor;
+		cellType = curType;
+		updateCell ();
 	}
 
 	void updateCell()
@@ -46,7 +53,7 @@ public class CellScript : MonoBehaviour {
 		{
 			if(_cellType != value){
 				_cellType = value;
-				updateCell();
+
 			}
 		}
 		get
@@ -69,9 +76,6 @@ public class CellScript : MonoBehaviour {
 
 
 
-	Transform cellTransform;
-	bool rotating = false;
-	uint frameSelectAEnd;
 
 	public void Init() {
 
@@ -89,6 +93,8 @@ public class CellScript : MonoBehaviour {
 	bool canMove = false;
 
 	Vector3 targetPosition;
+	float moveToTargetTime;
+	float startMoveTime;
 
 	void FixedUpdate()
 	{
@@ -106,93 +112,27 @@ public class CellScript : MonoBehaviour {
 
 
 
-	public void SetTargetPos(int row,int col)
+	public void MoveTo(int row,int col,float moveTime = 0f)
 	{
-		
+		moveToTargetTime = moveTime;
+		startMoveTime = Time.time;	
 
 		cellRow = row;
 		cellCol = col;
 
 		targetPosition = new Vector3(Constants.CELLS_LEFT + col * Constants.CELL_SIDE,
 		                             Constants.CELLS_BOTTOM + row * Constants.CELL_SIDE,
-		                             0f);
+		                             Zorder.cell);
 		canMove = true;
 	}
 
 
 
-	// Use this for initialization
-	void Start () 
-	{
-		cellTransform = this.transform;
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
-	}
-
-	Vector3 startPos;
-	void OnMouseDown()
-	{
-		beSelected();
-	}
-
-	void OnMouseDrag()
-	{
-		beDrag();
-
-	}
-
-	float activeDistance = 5f;
-
-	void beDrag()
-	{
-		if (!m_beSel) 
-		{
-			return;
-		}
-
-		var v3 = Input.mousePosition - startPos;
-		v3.Normalize();
-		var f = Vector3.Dot(v3, Vector3.up);
-		if (Vector3.Distance(startPos, Input.mousePosition) < activeDistance) {
-				// m_beSel = false;
-				return;
-			}
-			m_beSel = false;
-			if (f >= 0.5) 
-			{
-				Debug.Log("Up");
-			}
-			else if (f <= -0.5) 
-			{
-				Debug.Log("Down");
-			}
-			else 
-			{
-				f = Vector3.Dot(v3, Vector3.right);
-				if (f >= 0.5) {
-					 Debug.Log("Right");
-				}
-				else {
-				     Debug.Log("Left");
-				}
-
-			}
-	    	
 
 
-	}
 
-	bool m_beSel = false;
-	void beSelected()
-	{
-		m_beSel = true;
-		startPos = Input.mousePosition;
-		MainManager.instance.SelectCell(this);
-	}
+
+
 
 
 

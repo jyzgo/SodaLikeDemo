@@ -25,32 +25,128 @@ public class MainManager : MonoBehaviour {
 	}
 
 	
-	CellScript m_beSelectedCell;
+	int m_selRow = -1;
+	int m_selCol = -1;
 
-	public void SelectCell(CellScript cs)
+	public void SelectGrid(int row,int col)
 	{
-		if (cs != null) 
-		{
-			m_beSelectedCell = cs;
-			
-		}
+		m_selRow = row;
+		m_selCol = col;
 	
 	}
 
-	public void UnSelectCell()
+	public void UnselGrid()
 	{
-		m_beSelectedCell = null;
+		m_selCol = -1;
+		m_selRow = -1;
+
 	}
 
-	public void MoveCellToDir(DragDir dir)
+	Grid m_curGrid;
+	Grid m_targetGrid;
+	public bool MoveCellToDir(int offRow,int offCol)
 	{
+
+
+		int nextRow = m_selRow + offRow;
+		int nextCol = m_selCol + offCol;
+
+
+
+		if ((offRow == 0 && offCol == 0) || (offRow != 0 && offCol != 0))
+		{
+			return false;
+		}
+
+
+		if (nextRow < ActiveMinRow || nextRow >= ActiveMaxRow || nextCol < ActiveMinCol || nextCol >= ActiveMaxCol) 
+		{
+			return false;
+			
+		}
+
+
+		var nextGrid = mainGrids[nextRow][nextCol];
+		if (!nextGrid.isAllowMove()) 
+		{
+			return false;
+		}
+
+		m_curGrid = mainGrids [m_selRow] [m_selCol];
+		m_targetGrid = mainGrids [nextRow] [nextCol];
+
+		PlaySwapCellAction(m_curGrid,m_targetGrid,true);
+		
+		return true;
 		
 	}
 
 
+	
+	public bool isNormal()
+	{
+		return _state == GameState.Normal;
+	
+	}
+
+	public GameState _state {
+		private set;
+		get;
+	}
+	
+	void PlaySwapCellAction(Grid curGrid,Grid targetGrid,bool isMove)
+	{
+		int startRow = curGrid.Row;
+		int startCol = curGrid.Col;
+		int tarRow = targetGrid.Row;
+		int tarCol = targetGrid.Col;
+
+		curGrid.Cell.MoveTo(tarRow,tarCol,Constants.SWAP_TIME);
+		targetGrid.Cell.MoveTo (startRow, startCol, Constants.SWAP_TIME);
+
+		mainGrids.SwapCell (curGrid, targetGrid);
+		_state = GameState.Moving;
+
+
+		StartCoroutine (ResetMovingStateAndCheckElim (curGrid, targetGrid,isMove));
+
+
+	}
+
+	IEnumerator ResetMovingStateAndCheckElim(Grid l,Grid r,bool isMove)
+	{
+		yield return new WaitForSeconds(Constants.SWAP_TIME);
+		if (isMove) {
+			CheckMatch (l, r);
+		} else {
+			_state = GameState.Normal;
+		
+		}
+	}
+
+	void PlayBackAction()
+	{
+		PlaySwapCellAction (m_targetGrid, m_curGrid,false);
+
+	}
+
+	void CheckMatch(Grid l ,Grid r)
+	{
+		if (l.isMatchColor (r)) {
+			//same color no need check ,just back
+			PlayBackAction();
+		} else {
+			//
+
+		}
+		_state = GameState.Normal;
+	}
+
+
+
+
 	public GameObject CreateCell()
 	{
-
 
 		var curColor = genCellColor ();
 		var curType = genCellType ();
@@ -58,25 +154,70 @@ public class MainManager : MonoBehaviour {
 
 		GameObject cell = (GameObject)Instantiate(Resources.Load(cellPath,typeof(GameObject)));
 		var sc = cell.GetComponent<CellScript> ();
-		sc.cellColor = curColor;
-		sc.cellType = curType;
+		sc.init (curColor, curType);
 
 		cell.transform.parent = _cellHolder.transform;
 		
 		return cell;
 	}
 
-	void Start()
+	public int ActiveMinRow
 	{
-		mainGrids = new GridsManager();
+		private set;
+		get;
+	}
 
-		_cellHolder = GameObject.Find ("CellHolder");
+	public int ActiveMinCol
+	{
+		private set;
+		get;
+	}
 
+	public int ActiveMaxRow
+	{
+		private set;
+		get;
+	}
 
+	public int ActiveMaxCol
+	{
+		private set;
+		get;
+	}
 
-		for (int row = 0; row < Constants.MAX_ROWS; ++row) 
+	public int LevelState
+	{
+		private set;
+		get;
+	}
+
+	public int LevelMaxRow
+	{
+		private set;
+		get;
+	}
+
+	public int LevelMaxCol
+	{
+		private set;
+		get;
+	}
+
+	void UpdateActiveArea()
+	{
+		if (LevelState == 0) 
 		{
-			for (int col = 0 ; col < Constants.MAX_COLS; ++col) 
+			//根据关卡配置
+			ActiveMaxRow = Constants.MAX_ROWS;
+			ActiveMaxCol = Constants.MAX_COLS;
+
+			ActiveMinRow = 0;
+			ActiveMinCol = 0;
+		}
+
+		for (int row = ActiveMinRow; row < ActiveMaxRow; ++row) 
+		{
+			for (int col = ActiveMinCol ; col < ActiveMaxCol; ++col) 
 			{
 				
 				var curPrefab = CreateCell();
@@ -87,8 +228,28 @@ public class MainManager : MonoBehaviour {
 			}
 			
 		}
+
+
 	}
-	
+
+	void Start()
+	{
+		LevelMaxRow = Constants.MAX_ROWS;
+		LevelMaxCol = Constants.MAX_COLS;
+
+		mainGrids = new GridsManager();
+
+		_cellHolder = GameObject.Find ("CellHolder");
+
+		LevelState = 0;
+
+
+
+		UpdateActiveArea();
+
+	}
+
+
 
 	void Awake()
 	{	

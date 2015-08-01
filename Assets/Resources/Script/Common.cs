@@ -12,13 +12,10 @@ public enum CellColor {
 	Yellow = 6
 };
 
-public enum DragDir
+public enum GameState
 {
-	None,
-	Up,
-	Down,
-	Right,
-	Left
+	Normal,
+	Moving
 }
 
 public enum CellType
@@ -39,11 +36,12 @@ public static class Zorder
 
 public static class Constants
 {
-	public const int MAX_ROWS = 8;
-	public const int MAX_COLS = 8;
+	public const int MAX_ROWS = 9;
+	public const int MAX_COLS = 13;
 	public const float CELL_SIDE = 1.4f;
-	public const float CELLS_LEFT = -3.15f;
-	public const float CELLS_BOTTOM = -3.2f;
+	public const float CELLS_LEFT = -5.65f;
+	public const float CELLS_BOTTOM = -4.7f;
+	public const float SWAP_TIME = 0.3f;
 }
 
 

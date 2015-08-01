@@ -12,14 +12,15 @@ public class GridsManager  {
 
 	public void DropCell()
 	{
-		for (int row = 0; row < Constants.MAX_ROWS; ++row) 
+
+		for (int row = 0; row < _curMaxRow; ++row) 
 		{
-			for (int col = 0 ; col < Constants.MAX_COLS; ++col) 
+			for (int col = 0 ; col < _curMaxCol; ++col) 
 			{
 				if (cellGrids[row][col].isEmpty()) 
 				{
 					int nextRow = row + 1;
-					while (nextRow < Constants.MAX_ROWS) 
+					while (nextRow < _curMaxRow) 
 					{
 						if (!cellGrids[nextRow][col].isEmpty()) 
 						{
@@ -38,20 +39,20 @@ public class GridsManager  {
 	}
 
 	public void DropNewCells() {
-		for (int col = 0 ; col < Constants.MAX_COLS; ++col)
+		for (int col = 0 ; col < _curMaxCol; ++col)
 		{
-			for (int row = 0; row < Constants.MAX_ROWS; ++row)
+			for (int row = 0; row < _curMaxRow; ++row)
 			{
 				if (cellGrids[row][col].isEmpty()) 
 				{
-					int num = Constants.MAX_ROWS - row;
+					int num = _curMaxRow - row;
 					for (int i=0; i<num; i++) {
 						var prefab = MainManager.instance.CreateCell();
 						var cell = prefab.GetComponent<CellScript>();
 						SetCell(cell, row + i, col);
 						AdjustPos(row + i, col);
-						cell.transform.position += new Vector3(0, (Constants.MAX_ROWS - row + i) * Constants.CELL_SIDE, 0);
-						cell.SetTargetPos(row + i, col);
+						cell.transform.position += new Vector3(0, (_curMaxRow - row + i) * Constants.CELL_SIDE, 0);
+						cell.MoveTo(row + i, col);
 					}
 				}
 			}
@@ -85,12 +86,12 @@ public class GridsManager  {
 
 		if (l.Cell != null) 
 		{
-			l.Cell.SetTargetPos(l.Row,l.Col);
+			l.Cell.MoveTo(l.Row,l.Col);
 		}
 
 		if (r.Cell != null) 
 		{
-			r.Cell.SetTargetPos(r.Row,r.Col);
+			r.Cell.MoveTo(r.Row,r.Col);
 		}
 
 	}
@@ -138,6 +139,8 @@ public class GridsManager  {
 		}
 
 	}
+
+
     
 
 	public bool Destroy(int row,int col)
@@ -154,18 +157,28 @@ public class GridsManager  {
 
 	GameObject _gridHolder;
 
+	int _curMaxRow ;
+	int _curMaxCol ;
+
+
 	public GridsManager()
 	{//初始化棋盘
-		cellGrids = new List<List<Grid>>(Constants.MAX_ROWS);
+		_curMaxRow = MainManager.instance.LevelMaxRow;
+		_curMaxCol = MainManager.instance.LevelMaxCol;
+
+
+
+		cellGrids = new List<List<Grid>>(_curMaxRow);
 		_gridHolder = GameObject.Find("GridHolder");
+
 
 		GameObject grid = Resources.Load("Prefabs/Grid",typeof(GameObject)) as GameObject;
 
-		for (int row = 0; row < Constants.MAX_ROWS; ++row) 
+		for (int row = 0; row < _curMaxRow; ++row) 
 		{
-			var colList = new List<Grid>(Constants.MAX_COLS);
+			var colList = new List<Grid>(_curMaxCol);
 			cellGrids.Add(colList);
-			for (int col = 0 ; col < Constants.MAX_COLS; ++col) 
+			for (int col = 0 ; col < _curMaxCol; ++col) 
 			{
 				GameObject curGrid = Object.Instantiate(grid);
 				curGrid.transform.position = getPos(row,col,Zorder.grid);
@@ -178,7 +191,6 @@ public class GridsManager  {
 			
 		}
 
-		grid.SetActive (false);
 
 
 	}

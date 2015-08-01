@@ -47,6 +47,24 @@ public class Grid : MonoBehaviour {
 		get;
 	}
 
+	public bool isAllowMove()
+	{
+		if (isEmpty()) 
+		{
+			return false;
+			
+		}
+		return true;
+	}
+
+	public bool isMatchColor(Grid oth)
+	{
+		if (Cell.cellColor == oth.Cell.cellColor) {
+			return true;
+		}
+		return false;
+	}
+
 	
 	public bool isEmpty()
 	{
@@ -61,4 +79,100 @@ public class Grid : MonoBehaviour {
 			Cell = null;
 		}
 	}
+
+	Vector3 startPos;
+	void OnMouseDown()
+	{
+		beSelected();
+	}
+	
+	void OnMouseDrag()
+	{
+		beDrag();
+		
+	}
+
+
+	float activeDistance = 5f;
+
+	bool isBeSelected = false;
+	void beSelected()
+	{
+
+		if (!MainManager.instance.isNormal()) 
+		{
+			return;
+		}
+
+		StartCoroutine (unSelected ());
+
+		isBeSelected = true;
+		startPos = Input.mousePosition;
+		MainManager.instance.SelectGrid (Row,Col);
+	}
+
+	IEnumerator unSelected()
+	{
+		yield return new WaitForSeconds (0.5f);
+		isBeSelected = false;
+	}
+	
+	void beDrag()
+	{
+		if (!isBeSelected) {
+			return;
+		}
+
+
+		if (!MainManager.instance.isNormal()) 
+		{
+			return;
+		}
+
+
+		var v3 = Input.mousePosition - startPos;
+		v3.Normalize();
+		var f = Vector3.Dot(v3, Vector3.up);
+		if (Vector3.Distance(startPos, Input.mousePosition) < activeDistance) {
+			return;
+		}
+		int offsetRow;
+		int offsetCol;
+		Debug.Log ("row " + Row + " Col " + Col);
+		if (f >= 0.5) 
+		{
+			offsetRow = 1;
+			offsetCol = 0;
+			Debug.Log("Up");
+
+		}
+		else if (f <= -0.5) 
+		{
+			offsetRow = -1;
+			offsetCol = 0;
+			Debug.Log("Down");
+		}
+		else 
+		{
+			f = Vector3.Dot(v3, Vector3.right);
+			if (f >= 0.5) {
+				Debug.Log("Right");
+				offsetRow = 0;
+				offsetCol = 1;
+			}
+			else {
+				Debug.Log("Left");
+				offsetRow = 0;
+				offsetCol = -1;
+			}
+			
+		}
+
+		bool isMove = MainManager.instance.MoveCellToDir (offsetRow, offsetCol);
+
+
+		
+	}
+
+
 }

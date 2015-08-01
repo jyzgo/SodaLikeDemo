@@ -152,9 +152,12 @@ public class GridsManager  {
 
 	}
 
+	GameObject _gridHolder;
+
 	public GridsManager()
 	{//初始化棋盘
 		cellGrids = new List<List<Grid>>(Constants.MAX_ROWS);
+		_gridHolder = GameObject.Find("GridHolder");
 
 		GameObject grid = Resources.Load("Prefabs/Grid",typeof(GameObject)) as GameObject;
 
@@ -166,6 +169,7 @@ public class GridsManager  {
 			{
 				GameObject curGrid = Object.Instantiate(grid);
 				curGrid.transform.position = getPos(row,col,Zorder.grid);
+				curGrid.transform.parent = _gridHolder.transform;
 				var curScrit = curGrid.GetComponent<Grid>();
 				curScrit.init(row,col);
 				colList.Add(curScrit);

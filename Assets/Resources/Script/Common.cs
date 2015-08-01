@@ -23,6 +23,7 @@ public enum DragDir
 
 public enum CellType
 {
+	None,
 	Brick,
 	Bomb
 }

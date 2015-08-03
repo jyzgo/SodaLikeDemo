@@ -37,7 +37,7 @@ public static class Zorder
 public static class Constants
 {
 	public const int MAX_ROWS = 8;
-	public const int MAX_COLS = 8;
+	public const int MAX_COLS = 13;
 	public const float CELL_SIDE = 1.4f;
 	public const float CELLS_LEFT = -5.65f;
 	public const float CELLS_BOTTOM = -4.7f;

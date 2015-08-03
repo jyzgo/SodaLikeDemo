@@ -138,8 +138,10 @@ public class MainManager : MonoBehaviour {
 		} else {
 			//
 			Debug.Log("not same");
-			bool isElimAble = TryElim(l) || TryElim(r);
-			Debug.Log("aft");
+
+			bool leftElim = TryElim(l) ;
+			bool rightElim = TryElim(r);
+			bool isElimAble = leftElim || rightElim;
 			if(isElimAble)
 			{
 
@@ -211,6 +213,7 @@ public class MainManager : MonoBehaviour {
 		}
 
 		mainGrids.DropCell();
+		mainGrids.DropNewCells();
 		return true;
 
 

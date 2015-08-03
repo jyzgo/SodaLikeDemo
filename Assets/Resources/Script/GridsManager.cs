@@ -169,7 +169,7 @@ public class GridsManager  {
 
 
 		cellGrids = new List<List<Grid>>(_curMaxRow);
-		_gridHolder = GameObject.Find("GridHolder");
+		_gridHolder = new GameObject("GridHolder");//GameObject.Find("GridHolder");
 
 
 		GameObject grid = Resources.Load("Prefabs/Grid",typeof(GameObject)) as GameObject;

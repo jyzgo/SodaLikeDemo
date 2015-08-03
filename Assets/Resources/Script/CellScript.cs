@@ -100,7 +100,7 @@ public class CellScript : MonoBehaviour {
 	{
 		if(canMove)
 		{
-		    transform.position=Vector3.MoveTowards(transform.position,targetPosition,Time.deltaTime*8);//移动到指定位置
+		    transform.position=Vector3.MoveTowards(transform.position,targetPosition,Time.deltaTime*16);//移动到指定位置
 			
 			if (transform.position == targetPosition) 
 			{

@@ -59,6 +59,11 @@ public class Grid : MonoBehaviour {
 
 	public bool isMatchColor(Grid oth)
 	{
+		if(Cell == null || oth.Cell == null)
+		{
+			return false;
+		}
+		
 		if (Cell.cellColor == oth.Cell.cellColor) {
 			return true;
 		}
@@ -136,8 +141,8 @@ public class Grid : MonoBehaviour {
 		if (Vector3.Distance(startPos, Input.mousePosition) < activeDistance) {
 			return;
 		}
-		int offsetRow;
-		int offsetCol;
+		int offsetRow = -10;
+		int offsetCol = - 10;
 		Debug.Log ("row " + Row + " Col " + Col);
 		if (f >= 0.5) 
 		{
@@ -168,7 +173,11 @@ public class Grid : MonoBehaviour {
 			
 		}
 
-		bool isMove = MainManager.instance.MoveCellToDir (offsetRow, offsetCol);
+		if (Mathf.Abs(offsetRow) + Mathf.Abs(offsetCol) == 1) 
+		{
+			bool isMove = MainManager.instance.MoveCellToDir (offsetRow, offsetCol);
+		}
+
 
 
 		

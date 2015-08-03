@@ -137,9 +137,125 @@ public class MainManager : MonoBehaviour {
 			PlayBackAction();
 		} else {
 			//
+			Debug.Log("not same");
+			bool isElimAble = TryElim(l) || TryElim(r);
+			Debug.Log("aft");
+			if(isElimAble)
+			{
+
+			}else
+			{
+				PlayBackAction();
+			}
 
 		}
+
+	}
+
+	bool TryElim(Grid g)
+	{
+		Debug.Log("try in");
+//		return false;
+		List<Grid> horizontalList = new List<Grid> ();
+		horizontalList.Add (g);
+		CheckSameColorAndAdd (g, 0, 1, horizontalList);
+		CheckSameColorAndAdd (g, 0, -1, horizontalList);
+
+		List<Grid> verticalList = new List<Grid> ();
+		verticalList.Add (g);
+		CheckSameColorAndAdd (g, 1, 0, verticalList);
+		CheckSameColorAndAdd (g, -1, 0, verticalList);
+
+		int verCount = verticalList.Count;
+		int horCount = horizontalList.Count;
+
+		Debug.Log ("ver " + verCount + "hor " + horCount);
+
 		_state = GameState.Normal;
+		if (verCount < 3 && horCount < 3) {
+			
+			return false;
+		}
+
+		if (verCount == 3 || horCount < 3) {
+			//vertical elim
+			ElimGridList(verticalList);
+		} else if (verCount < 3 || horCount == 3) {
+			//horizon elim
+			ElimGridList(horizontalList);
+		} else if (verCount == 4 && horCount < 3) {
+			//form horiBomb
+			ElimGridList(verticalList);
+		} else if (horCount == 3 && verCount < 3) {
+			//form verBomb
+			ElimGridList(horizontalList);
+		} else if (horCount == 5 && verCount < 3) {
+			//color bomb
+			ElimGridList(horizontalList);
+		
+		} else if (verCount == 5 && horCount < 3) {
+			//color bomb
+			ElimGridList(verticalList);
+		} else if (horCount >= 3 && horCount < 5 && verCount >= 3 && verCount < 5) {
+			//square bomb
+			ElimGridList(verticalList);
+			ElimGridList(horizontalList);
+		} else if (horCount >= 5 && verCount >= 3) {
+			//tint bomb
+			ElimGridList(verticalList);
+			ElimGridList(horizontalList);
+		} else if (verCount >= 5 && horCount >= 3) {
+			//tint bomb
+			ElimGridList(verticalList);
+			ElimGridList(horizontalList);
+		}
+
+		mainGrids.DropCell();
+		return true;
+
+
+	}
+
+	void ElimGridList(List<Grid> lst)
+	{
+		for (int i  =0 ; i < lst.Count; ++i) 
+		{
+			Grid curGrid = lst[i];
+			curGrid.DestroyCell();
+			
+		}
+	}
+	void CheckSameColorAndAdd(Grid g,int offRow,int offCol,List<Grid> curList)
+	{
+
+		int curRow = g.Row;
+		int curCol = g.Col;
+
+
+		while (true) {
+
+			int nextRow = curRow + offRow;
+			int nextCol = curCol + offCol;
+
+			Debug.Log ("nextRow "+ nextRow + "nextCol " +nextCol);
+
+			if(nextRow >= ActiveMaxRow || nextCol >= ActiveMaxCol || nextRow <ActiveMinRow ||nextCol < ActiveMinCol)
+			{
+				return;
+			}
+			Grid nextGrid = mainGrids[nextRow][nextCol];
+			curRow = nextRow;
+			curCol = nextCol;
+			if(g.isMatchColor(nextGrid))
+			{
+				curList.Add(nextGrid);
+
+			}else
+			{
+				return;
+			}
+		}
+
 	}
 
 
@@ -239,7 +355,7 @@ public class MainManager : MonoBehaviour {
 
 		mainGrids = new GridsManager();
 
-		_cellHolder = GameObject.Find ("CellHolder");
+		_cellHolder = new GameObject("CellHolder");
 
 		LevelState = 0;
 

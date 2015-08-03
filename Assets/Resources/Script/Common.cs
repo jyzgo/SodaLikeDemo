@@ -25,14 +25,25 @@ public enum CellType
 	Bomb
 }
 
+public enum BombType
+{
+	None,
+	Horizontal,
+	Vertical,
+	Square,
+	Fish,
+	Color,
+	Tint
+}
+
 public static class Zorder
 {
 	public const float grid = 10f;
 	public const float cell = 0;
-	
-
 
 }
+
+
 
 public static class Constants
 {

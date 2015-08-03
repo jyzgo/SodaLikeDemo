@@ -156,8 +156,7 @@ public class MainManager : MonoBehaviour {
 
 	bool TryElim(Grid g)
 	{
-		Debug.Log("try in");
-//		return false;
+
 		List<Grid> horizontalList = new List<Grid> ();
 		horizontalList.Add (g);
 		CheckSameColorAndAdd (g, 0, 1, horizontalList);
@@ -174,6 +173,10 @@ public class MainManager : MonoBehaviour {
 		Debug.Log ("ver " + verCount + "hor " + horCount);
 
 		_state = GameState.Normal;
+
+
+
+
 		if (verCount < 3 && horCount < 3) {
 			
 			return false;
@@ -181,36 +184,45 @@ public class MainManager : MonoBehaviour {
 
 		if (verCount == 3 || horCount < 3) {
 			//vertical elim
-			ElimGridList(verticalList);
+			ElimGridListAndGenBomb(verticalList,g);
 		} else if (verCount < 3 || horCount == 3) {
 			//horizon elim
-			ElimGridList(horizontalList);
+			ElimGridListAndGenBomb(horizontalList,g);
 		} else if (verCount == 4 && horCount < 3) {
 			//form horiBomb
-			ElimGridList(verticalList);
-		} else if (horCount == 3 && verCount < 3) {
+			ElimGridListAndGenBomb(verticalList,g);
+		} else if (horCount == 4 && verCount < 3) {
 			//form verBomb
-			ElimGridList(horizontalList);
+			ElimGridListAndGenBomb(horizontalList,g);
 		} else if (horCount == 5 && verCount < 3) {
 			//color bomb
-			ElimGridList(horizontalList);
+			ElimGridListAndGenBomb(horizontalList,g);
 		
 		} else if (verCount == 5 && horCount < 3) {
 			//color bomb
-			ElimGridList(verticalList);
+			ElimGridListAndGenBomb(verticalList,g);
 		} else if (horCount >= 3 && horCount < 5 && verCount >= 3 && verCount < 5) {
 			//square bomb
-			ElimGridList(verticalList);
-			ElimGridList(horizontalList);
+			ElimGridListAndGenBomb(verticalList,g);
+			ElimGridListAndGenBomb(horizontalList,g);
 		} else if (horCount >= 5 && verCount >= 3) {
 			//tint bomb
-			ElimGridList(verticalList);
-			ElimGridList(horizontalList);
+			ElimGridListAndGenBomb(verticalList,g);
+			ElimGridListAndGenBomb(horizontalList,g);
 		} else if (verCount >= 5 && horCount >= 3) {
 			//tint bomb
-			ElimGridList(verticalList);
-			ElimGridList(horizontalList);
+			ElimGridListAndGenBomb(verticalList,g);
+			ElimGridListAndGenBomb(horizontalList,g);
+		}else if(verCount == 2 && horCount == 2)
+		{// check whether is fish
+
+		}else {
+			
 		}
+
+
+
+
 
 		mainGrids.DropCell();
 		mainGrids.DropNewCells();
@@ -219,14 +231,23 @@ public class MainManager : MonoBehaviour {
 
 	}
 
-	void ElimGridList(List<Grid> lst)
+	bool TryGenFish(Grid g)
 	{
-		for (int i  =0 ; i < lst.Count; ++i) 
+		return false;
+	}
+
+	void ElimGridListAndGenBomb(List<Grid> lst,Grid g,BombType genBomb = BombType.None)
+	{
+		if (genBomb == BombType.None) 
 		{
-			Grid curGrid = lst[i];
-			curGrid.DestroyCell();
-			
+			for (int i  =0 ; i < lst.Count; ++i) 
+			{
+				Grid curGrid = lst[i];
+				curGrid.DestroyCell();
+				
+			}
 		}
+
 	}
 	void CheckSameColorAndAdd(Grid g,int offRow,int offCol,List<Grid> curList)
 	{
@@ -361,8 +382,6 @@ public class MainManager : MonoBehaviour {
 		_cellHolder = new GameObject("CellHolder");
 
 		LevelState = 0;
-
-
 
 		UpdateActiveArea();
 

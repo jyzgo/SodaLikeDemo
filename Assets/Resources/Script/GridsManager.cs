@@ -4,14 +4,20 @@ using System.Collections.Generic;
 
 
 
-public class GridsManager  {
-
+public class GridsManager:MonoBehaviour  {
 
 
 	List<List<Grid>> cellGrids; 
 
-	public void DropCell()
+
+	public void DropCell(float delayTime = 0f)
 	{
+		StartCoroutine(DoDropCell(delayTime));
+	}
+
+	IEnumerator DoDropCell(float delayTime = 0f)
+	{
+		yield return new WaitForSeconds(delayTime);
 
 		for (int row = 0; row < _curMaxRow; ++row) 
 		{
@@ -38,7 +44,14 @@ public class GridsManager  {
 		// AdjustAllPos();
 	}
 
-	public void DropNewCells() {
+	public void DropNewCells(float delayTime = 0f)
+	{
+		StartCoroutine(DoDropNewCells(delayTime));
+	}
+
+	IEnumerator DoDropNewCells(float delayTime = 0f) {
+		yield return new WaitForSeconds(delayTime);
+
 		for (int col = 0 ; col < _curMaxCol; ++col)
 		{
 			for (int row = 0; row < _curMaxRow; ++row)
@@ -134,13 +147,14 @@ public class GridsManager  {
 	{
 		get
 		{
-			if (row >= cellGrids.Count) 
+			
+			if (row < 0 || row >= cellGrids.Count) 
 			{
 				return null;
 			}
 			var curList = cellGrids[row];
 
-			if (col >= curList.Count) 
+			if (col< 0 || col >= curList.Count) 
 			{
 				return null;
 				
@@ -173,8 +187,10 @@ public class GridsManager  {
 	int _curMaxCol ;
 
 
-	public GridsManager()
-	{//初始化棋盘
+
+	void Awake()
+	{
+		
 		_curMaxRow = MainManager.instance.LevelMaxRow;
 		_curMaxCol = MainManager.instance.LevelMaxCol;
 
@@ -198,14 +214,13 @@ public class GridsManager  {
 				var curScrit = curGrid.GetComponent<Grid>();
 				curScrit.init(row,col);
 				colList.Add(curScrit);
-				
+
 			}
-			
+
 		}
-
-
-
 	}
+
+
 
 
 }

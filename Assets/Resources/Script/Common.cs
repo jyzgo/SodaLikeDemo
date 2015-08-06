@@ -33,7 +33,7 @@ public enum BombType
 	Square,
 	Fish,
 	Color,
-	Tint
+	Coloring
 }
 
 public static class Zorder
@@ -53,6 +53,7 @@ public static class Constants
 	public const float CELLS_LEFT = -5.65f;
 	public const float CELLS_BOTTOM = -4.7f;
 	public const float SWAP_TIME = 0.3f;
+	public const float FORM_TIME = 0.2f;
 }
 
 

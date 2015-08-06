@@ -57,7 +57,16 @@ public class Grid : MonoBehaviour {
 		return true;
 	}
 
+	public void MoveToAndElim(Grid g,float moveTime)
+	{
+		if (g && Cell) 
+		{
+			Cell.MoveTo(g.Row,g.Col,moveTime);
+			DestroyCell (moveTime);
 
+			
+		}
+	}
 
 	public bool isMatchColor(Grid oth)
 	{
@@ -83,11 +92,11 @@ public class Grid : MonoBehaviour {
 		return Cell == null ? true: false;
 	}
 	
-	public void DestroyCell()
+	public void DestroyCell(float t = 0f)
 	{
 		if (Cell != null) 
 		{
-			Destroy(Cell.gameObject);
+			Destroy(Cell.gameObject,t);
 			Cell = null;
 		}
 	}
@@ -150,30 +159,30 @@ public class Grid : MonoBehaviour {
 		}
 		int offsetRow = -10;
 		int offsetCol = - 10;
-		Debug.Log ("row " + Row + " Col " + Col);
+		Debug.Log ("be drag row " + Row + " Col " + Col);
 		if (f >= 0.5) 
 		{
 			offsetRow = 1;
 			offsetCol = 0;
-			Debug.Log("Up");
+//			Debug.Log("Up");
 
 		}
 		else if (f <= -0.5) 
 		{
 			offsetRow = -1;
 			offsetCol = 0;
-			Debug.Log("Down");
+//			Debug.Log("Down");
 		}
 		else 
 		{
 			f = Vector3.Dot(v3, Vector3.right);
 			if (f >= 0.5) {
-				Debug.Log("Right");
+//				Debug.Log("Right");
 				offsetRow = 0;
 				offsetCol = 1;
 			}
 			else {
-				Debug.Log("Left");
+//				Debug.Log("Left");
 				offsetRow = 0;
 				offsetCol = -1;
 			}

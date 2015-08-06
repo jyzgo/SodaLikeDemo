@@ -13,7 +13,7 @@ public class MainManager : MonoBehaviour {
 
 	CellColor genCellColor()
 	{
-		CellColor curColor = (CellColor)Random.Range (1, 7);
+		CellColor curColor = (CellColor)Random.Range (1, 5);
 
 		return curColor;
 	}
@@ -138,10 +138,16 @@ public class MainManager : MonoBehaviour {
 			PlayBackAction();
 		} else {
 			//
-			Debug.Log("not same");
+//			Debug.Log("not same");
 
 			bool leftElim = TryElim(l) ;
+			if (leftElim) {
+				Debug.Log ("lll row " + l.Row + " col " + l.Col);
+			}
 			bool rightElim = TryElim(r);
+			if (rightElim) {
+				Debug.Log ("rrr row " + r.Row + " col " + r.Col);
+			}
 			bool isElimAble = leftElim || rightElim;
 			if(isElimAble)
 			{
@@ -155,22 +161,7 @@ public class MainManager : MonoBehaviour {
 
 	}
 
-	bool CheckFish(List<Grid> fishList,Grid oriG)
-	{
-		//check is fish or not
 
-		//left 0,-1
-		//up 1,0
-		//right 0,1
-		//down -1,0
-
-
-
-
-
-
-		return false;
-	}
 
 	bool TryElim(Grid g)
 	{
@@ -196,167 +187,134 @@ public class MainManager : MonoBehaviour {
 
 		_state = GameState.Normal;
 
+		var leftUpGrid = mainGrids [g.Row + 1, g.Col - 1];
+		bool isMatchLeftUp  = g.isMatchColor(leftUpGrid);
 
-		bool isMatchLeftUp  = g.isMatchColor(mainGrids[g.Row+1,g.Col-1]);
-		bool isMatchUpRight = g.isMatchColor(mainGrids[g.Row+1,g.Col+1]);
-		bool isMatchRightDown = g.isMatchColor(mainGrids[g.Row-1,g.Col+1]);
-		bool isMatchDownLeft = g.isMatchColor(mainGrids[g.Row-1,g.Col-1]);
+		var upRightGrid = mainGrids [g.Row + 1, g.Col + 1];
+		bool isMatchUpRight = g.isMatchColor(upRightGrid);
+
+		var rightDownGrid = mainGrids [g.Row - 1, g.Col + 1];
+		bool isMatchRightDown = g.isMatchColor(rightDownGrid);
+
+		var downLeftGrid = mainGrids [g.Row - 1, g.Col - 1];
+		bool isMatchDownLeft = g.isMatchColor(downLeftGrid);
 
 		//striped candy
-
 		List<Grid> finalList = new List<Grid>();
-		finalList.Add(g);
-		if (verCount >= 5 && horCount >= 2 ) 
-		{
+		if (verCount >= 5 && horCount >= 2) {
 			//Coloring candy
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
+			Debug.Log("Coloring candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			ElimGridListAndGenBomb (finalList, g,BombType.Coloring);
 			
-		}else if (horCount >= 5 && verCount >=2 ) 
-		{
+		} else if (horCount >= 5 && verCount >= 2) {
 			//Coloring candy
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
-		}else if (verCount >= 5 && horCount == 1) 
-		{
+			Debug.Log("Coloring candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			ElimGridListAndGenBomb (finalList, g,BombType.Coloring);
+		} else if (verCount >= 5 && horCount == 1) {
 			//color candy	
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
-		}else if (horCount >= 5 && verCount == 1) 
-		{
-			//color candy	
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
-		}
-		else if (leftList.Count > 0 && upList.Count > 0 && isMatchLeftUp) {
+			Debug.Log("Color candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			ElimGridListAndGenBomb (finalList, g,BombType.Color);
+		} else if (horCount >= 5 && verCount == 1) {
+			//color candy
+			Debug.Log("Color candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			ElimGridListAndGenBomb (finalList, g,BombType.Color);
+		} else if (leftList.Count > 0 && upList.Count > 0 && isMatchLeftUp) {
 			//fish candy
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
+			Debug.Log("fish1 candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			finalList.Add (leftUpGrid);
+			ElimGridListAndGenBomb (finalList, g,BombType.Fish);
 			
-		}
-		else if (upList.Count > 0 && rightList.Count > 0 && isMatchUpRight) {
+		} else if (upList.Count > 0 && rightList.Count > 0 && isMatchUpRight) {
 			//fish candy
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
+			Debug.Log("fish2 candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			finalList.Add (upRightGrid);
+			ElimGridListAndGenBomb (finalList, g,BombType.Fish);
 			
-		}
-		else if (rightList.Count > 0 && downList.Count > 0 && isMatchRightDown) {
+		} else if (rightList.Count > 0 && downList.Count > 0 && isMatchRightDown) {
 			//fish candy
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
+			Debug.Log("fish3 candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			finalList.Add (rightDownGrid);
+			ElimGridListAndGenBomb (finalList, g,BombType.Fish);
 			
-		}
-		else if (downList.Count > 0 && leftList.Count > 0 && isMatchDownLeft) {
+		} else if (downList.Count > 0 && leftList.Count > 0 && isMatchDownLeft) {
 			//fish candy
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
+			Debug.Log("fish4 candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			finalList.Add (downLeftGrid);
+			ElimGridListAndGenBomb (finalList, g,BombType.Fish);
 			
-		}
-
-		else if (horCount >= 3 && horCount < 5 && verCount >= 3 && verCount < 5) {
+		} else if (horCount >= 3 && horCount < 5 && verCount >= 3 && verCount < 5) {
 			//square bomb
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
-		}else if (verCount == 4 && horCount < 3) {
+			Debug.Log("square candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			ElimGridListAndGenBomb (finalList, g,BombType.Square);
+		} else if (verCount == 4 && horCount < 3) {
 			//form hor
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			ElimGridListAndGenBomb(finalList,g);
+			Debug.Log("hor candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			ElimGridListAndGenBomb (finalList, g,BombType.Horizontal);
 		} else if (horCount == 4 && verCount < 3) {
 			//form verBomb
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
-		}else if (verCount == 3 || horCount < 3) {
+			Debug.Log("ver candy");
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			ElimGridListAndGenBomb (finalList, g,BombType.Vertical);
+		} else if (verCount == 3 && horCount < 3) {
 			//vertical elim
-			finalList.AddRange(upList);
-			finalList.AddRange(downList);
-			ElimGridListAndGenBomb(finalList,g);
-		} else if (verCount < 3 || horCount == 3) {
+			Debug.Log("verelim candy");
+			finalList.AddRange (upList);
+			finalList.AddRange (downList);
+			ElimGridListAndGenBomb (finalList, g);
+		} else if (verCount < 3 && horCount == 3) {
 			//horizon elim
-			finalList.AddRange(rightList);
-			finalList.AddRange(leftList);
-			ElimGridListAndGenBomb(finalList,g);
+			Debug.Log("horelim candy");
+			finalList.AddRange (rightList);
+			finalList.AddRange (leftList);
+			ElimGridListAndGenBomb (finalList, g);
+		} else {
+			Debug.Log("no elim");
+			return false;
 		}
-
-
-
-		// if (verCount < 3 && horCount < 3) {
 			
-		// 	return false;
-		// }
 
-		// if (verCount == 3 || horCount < 3) {
-		// 	//vertical elim
-		// 	ElimGridListAndGenBomb(verticalList,g);
-		// } else if (verCount < 3 || horCount == 3) {
-		// 	//horizon elim
-		// 	ElimGridListAndGenBomb(horizontalList,g);
-		// } else if (verCount == 4 && horCount < 3) {
-		// 	//form horiBomb
-		// 	ElimGridListAndGenBomb(verticalList,g);
-		// } else if (horCount == 4 && verCount < 3) {
-		// 	//form verBomb
-		// 	ElimGridListAndGenBomb(horizontalList,g);
-		// } else if (horCount == 5 && verCount < 3) {
-		// 	//color bomb
-		// 	ElimGridListAndGenBomb(horizontalList,g);
+		mainGrids.DropCell (Constants.FORM_TIME);
+		mainGrids.DropNewCells (Constants.FORM_TIME);
 		
-		// } else if (verCount == 5 && horCount < 3) {
-		// 	//color bomb
-		// 	ElimGridListAndGenBomb(verticalList,g);
-		// } else if (horCount >= 3 && horCount < 5 && verCount >= 3 && verCount < 5) {
-		// 	//square bomb
-		// 	ElimGridListAndGenBomb(verticalList,g);
-		// 	ElimGridListAndGenBomb(horizontalList,g);
-		// } else if (horCount >= 5 && verCount >= 3) {
-		// 	//tint bomb
-		// 	ElimGridListAndGenBomb(verticalList,g);
-		// 	ElimGridListAndGenBomb(horizontalList,g);
-		// } else if (verCount >= 5 && horCount >= 3) {
-		// 	//tint bomb
-		// 	ElimGridListAndGenBomb(verticalList,g);
-		// 	ElimGridListAndGenBomb(horizontalList,g);
-		// }else if(verCount == 2 && horCount == 2)
-		// {// check whether is fish
-
-		// }else {
-			
-		// }
-
-
-
-
-
-		mainGrids.DropCell();
-		mainGrids.DropNewCells();
 		return true;
 
 
@@ -369,15 +327,25 @@ public class MainManager : MonoBehaviour {
 
 	void ElimGridListAndGenBomb(List<Grid> lst,Grid g,BombType genBomb = BombType.None)
 	{
-		if (genBomb == BombType.None) 
-		{
-			for (int i  =0 ; i < lst.Count; ++i) 
-			{
-				Grid curGrid = lst[i];
-				curGrid.DestroyCell();
-				
+		if (genBomb == BombType.None) {
+			g.DestroyCell ();
+			for (int i = 0; i < lst.Count; ++i) {
+				Grid curGrid = lst [i];
+				curGrid. DestroyCell();
+
+			}
+
+		} else {
+			g.Cell.cellType = CellType.Bomb;
+			g.Cell.cellBombType = genBomb;
+			g.Cell.updateCell (Constants.FORM_TIME);
+			for (int i = 0; i < lst.Count; ++i) {
+				Grid curGrid = lst [i];
+				curGrid. MoveToAndElim(g,Constants.FORM_TIME);
+
 			}
 		}
+
 
 	}
 	void CheckSameColorAndAdd(Grid g,int offRow,int offCol,List<Grid> curList)
@@ -392,7 +360,7 @@ public class MainManager : MonoBehaviour {
 			int nextRow = curRow + offRow;
 			int nextCol = curCol + offCol;
 
-			Debug.Log ("nextRow "+ nextRow + "nextCol " +nextCol);
+//			Debug.Log ("nextRow "+ nextRow + "nextCol " +nextCol);
 
 			if(nextRow >= ActiveMaxRow || nextCol >= ActiveMaxCol || nextRow <ActiveMinRow ||nextCol < ActiveMinCol)
 			{
@@ -503,12 +471,17 @@ public class MainManager : MonoBehaviour {
 
 	}
 
+	GameObject gridManager;
+
 	void Start()
 	{
 		LevelMaxRow = Constants.MAX_ROWS;
 		LevelMaxCol = Constants.MAX_COLS;
+		gridManager = new GameObject();
+		gridManager.AddComponent<GridsManager>();
 
-		mainGrids = new GridsManager();
+
+		mainGrids = gridManager.GetComponent<GridsManager>();
 
 		_cellHolder = new GameObject("CellHolder");
 

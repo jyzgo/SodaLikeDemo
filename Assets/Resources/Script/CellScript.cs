@@ -30,11 +30,30 @@ public class CellScript : MonoBehaviour {
 		updateCell ();
 	}
 
-	void updateCell()
+	private BombType _cellBombType = BombType.None;
+	public BombType cellBombType
 	{
+		set{ 
+			_cellBombType = value;
+		}
+		get{
+			return _cellBombType;
+		}
+	}
+
+
+	public void updateCell(float delayTime = 0f)
+	{
+		StartCoroutine(DoUpdateCell(delayTime));
+
+	}
+
+	IEnumerator DoUpdateCell(float delayTime)
+	{
+		yield return new WaitForSeconds(delayTime);
 		if (_cellColor != CellColor.None && _cellType != CellType.None) {
 
-			string spritePath = _cellType.ToString() + _cellColor.ToString();
+			string spritePath = _cellType.ToString() +_cellBombType.ToString()+ _cellColor.ToString();
 
 			Sprite newSprite = Resources.Load("Sprite/Cells/"+spritePath,typeof(Sprite)) as Sprite;
 			GetComponent<SpriteRenderer>().sprite = newSprite;
@@ -43,7 +62,6 @@ public class CellScript : MonoBehaviour {
 
 		
 		}
-
 	}
 
 	[SerializeField, SetProperty("CellType")]

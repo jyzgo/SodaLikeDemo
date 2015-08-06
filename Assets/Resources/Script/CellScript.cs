@@ -113,19 +113,29 @@ public class CellScript : MonoBehaviour {
 	Vector3 targetPosition;
 	float moveToTargetTime;
 	float startMoveTime;
+	float moveLength;
+
+	const float speed = 10;
 
 	void FixedUpdate()
 	{
-		if(canMove)
+		if(!canMove)
 		{
-		    transform.position=Vector3.MoveTowards(transform.position,targetPosition,Time.deltaTime*16);//移动到指定位置
-			
-			if (transform.position == targetPosition) 
-			{
-				canMove = false;
-				
-			}
+			return;
 		}
+
+		float distCoverd = (Time.time - startMoveTime)* speed;
+		float fracJourney = distCoverd/moveLength;
+
+
+	    transform.position=Vector3.Lerp(transform.position,targetPosition,fracJourney);//移动到指定位置
+		
+		if (transform.position == targetPosition) 
+		{
+			canMove = false;
+			
+		}
+		
 	}
 
 
@@ -138,21 +148,14 @@ public class CellScript : MonoBehaviour {
 		cellRow = row;
 		cellCol = col;
 
+
+
 		targetPosition = new Vector3(Constants.CELLS_LEFT + col * Constants.CELL_SIDE,
 		                             Constants.CELLS_BOTTOM + row * Constants.CELL_SIDE,
 		                             Zorder.cell);
+		moveLength = Vector3.Distance(transform.position, targetPosition);
 		canMove = true;
 	}
-
-
-
-
-
-
-
-
-
-
 
 	public void SetSelectedEffect() {
 

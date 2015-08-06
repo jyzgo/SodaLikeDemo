@@ -125,18 +125,11 @@ public class Grid : MonoBehaviour {
 			return;
 		}
 
-		StartCoroutine (unSelected ());
-
 		isBeSelected = true;
 		startPos = Input.mousePosition;
 		MainManager.instance.SelectGrid (Row,Col);
 	}
 
-	IEnumerator unSelected()
-	{
-		yield return new WaitForSeconds (0.5f);
-		isBeSelected = false;
-	}
 	
 	void beDrag()
 	{
@@ -191,7 +184,14 @@ public class Grid : MonoBehaviour {
 
 		if (Mathf.Abs(offsetRow) + Mathf.Abs(offsetCol) == 1) 
 		{
+
 			bool isMove = MainManager.instance.MoveCellToDir (offsetRow, offsetCol);
+			if (isMove) 
+			{
+				isBeSelected = false;
+				
+			}
+
 		}
 
 

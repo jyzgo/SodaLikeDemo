@@ -185,7 +185,7 @@ public class MainManager : MonoBehaviour {
 
 		Debug.Log ("ver " + verCount + "hor " + horCount);
 
-		_state = GameState.Normal;
+
 
 		var leftUpGrid = mainGrids [g.Row + 1, g.Col - 1];
 		bool isMatchLeftUp  = g.isMatchColor(leftUpGrid);
@@ -308,12 +308,13 @@ public class MainManager : MonoBehaviour {
 			ElimGridListAndGenBomb (finalList, g);
 		} else {
 			Debug.Log("no elim");
+			_state = GameState.Normal;
 			return false;
 		}
 			
 
-		mainGrids.DropCell (Constants.FORM_TIME);
-		mainGrids.DropNewCells (Constants.FORM_TIME);
+		mainGrids.DropCell (Constants.FORM_TIME + 0.1f);
+		mainGrids.DropNewCells (Constants.FORM_TIME + 0.1f);
 		
 		return true;
 

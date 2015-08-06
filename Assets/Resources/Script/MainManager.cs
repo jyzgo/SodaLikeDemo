@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class MainManager : MonoBehaviour {
 
@@ -66,14 +67,14 @@ public class MainManager : MonoBehaviour {
 		}
 
 
-		var nextGrid = mainGrids[nextRow][nextCol];
+		var nextGrid = mainGrids[nextRow,nextCol];
 		if (!nextGrid.isAllowMove()) 
 		{
 			return false;
 		}
 
-		m_curGrid = mainGrids [m_selRow] [m_selCol];
-		m_targetGrid = mainGrids [nextRow] [nextCol];
+		m_curGrid = mainGrids [m_selRow,m_selCol];
+		m_targetGrid = mainGrids [nextRow,nextCol];
 
 		PlaySwapCellAction(m_curGrid,m_targetGrid,true);
 		
@@ -154,71 +155,201 @@ public class MainManager : MonoBehaviour {
 
 	}
 
+	bool CheckFish(List<Grid> fishList,Grid oriG)
+	{
+		//check is fish or not
+
+		//left 0,-1
+		//up 1,0
+		//right 0,1
+		//down -1,0
+
+
+
+
+
+
+		return false;
+	}
+
 	bool TryElim(Grid g)
 	{
 
-		List<Grid> horizontalList = new List<Grid> ();
-		horizontalList.Add (g);
-		CheckSameColorAndAdd (g, 0, 1, horizontalList);
-		CheckSameColorAndAdd (g, 0, -1, horizontalList);
+		List<Grid> leftList = new List<Grid>();
+		CheckSameColorAndAdd(g,0,-1,leftList);
 
-		List<Grid> verticalList = new List<Grid> ();
-		verticalList.Add (g);
-		CheckSameColorAndAdd (g, 1, 0, verticalList);
-		CheckSameColorAndAdd (g, -1, 0, verticalList);
+		List<Grid> rightList = new List<Grid>();
+		CheckSameColorAndAdd(g,0,1,rightList);
 
-		int verCount = verticalList.Count;
-		int horCount = horizontalList.Count;
+		List<Grid> upList = new List<Grid>();
+		CheckSameColorAndAdd(g,1,0,upList);
+
+		List<Grid> downList = new List<Grid>();
+		CheckSameColorAndAdd(g,-1,0,downList);
+
+
+
+		int horCount = leftList.Count + rightList.Count + 1;
+		int verCount  = upList.Count + downList.Count + 1;
 
 		Debug.Log ("ver " + verCount + "hor " + horCount);
 
 		_state = GameState.Normal;
 
 
+		bool isMatchLeftUp  = g.isMatchColor(mainGrids[g.Row+1,g.Col-1]);
+		bool isMatchUpRight = g.isMatchColor(mainGrids[g.Row+1,g.Col+1]);
+		bool isMatchRightDown = g.isMatchColor(mainGrids[g.Row-1,g.Col+1]);
+		bool isMatchDownLeft = g.isMatchColor(mainGrids[g.Row-1,g.Col-1]);
 
+		//striped candy
 
-		if (verCount < 3 && horCount < 3) {
+		List<Grid> finalList = new List<Grid>();
+		finalList.Add(g);
+		if (verCount >= 5 && horCount >= 2 ) 
+		{
+			//Coloring candy
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
 			
-			return false;
+		}else if (horCount >= 5 && verCount >=2 ) 
+		{
+			//Coloring candy
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
+		}else if (verCount >= 5 && horCount == 1) 
+		{
+			//color candy	
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
+		}else if (horCount >= 5 && verCount == 1) 
+		{
+			//color candy	
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
+		}
+		else if (leftList.Count > 0 && upList.Count > 0 && isMatchLeftUp) {
+			//fish candy
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
+			
+		}
+		else if (upList.Count > 0 && rightList.Count > 0 && isMatchUpRight) {
+			//fish candy
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
+			
+		}
+		else if (rightList.Count > 0 && downList.Count > 0 && isMatchRightDown) {
+			//fish candy
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
+			
+		}
+		else if (downList.Count > 0 && leftList.Count > 0 && isMatchDownLeft) {
+			//fish candy
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
+			
 		}
 
-		if (verCount == 3 || horCount < 3) {
-			//vertical elim
-			ElimGridListAndGenBomb(verticalList,g);
-		} else if (verCount < 3 || horCount == 3) {
-			//horizon elim
-			ElimGridListAndGenBomb(horizontalList,g);
-		} else if (verCount == 4 && horCount < 3) {
-			//form horiBomb
-			ElimGridListAndGenBomb(verticalList,g);
+		else if (horCount >= 3 && horCount < 5 && verCount >= 3 && verCount < 5) {
+			//square bomb
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
+		}else if (verCount == 4 && horCount < 3) {
+			//form hor
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			ElimGridListAndGenBomb(finalList,g);
 		} else if (horCount == 4 && verCount < 3) {
 			//form verBomb
-			ElimGridListAndGenBomb(horizontalList,g);
-		} else if (horCount == 5 && verCount < 3) {
-			//color bomb
-			ElimGridListAndGenBomb(horizontalList,g);
-		
-		} else if (verCount == 5 && horCount < 3) {
-			//color bomb
-			ElimGridListAndGenBomb(verticalList,g);
-		} else if (horCount >= 3 && horCount < 5 && verCount >= 3 && verCount < 5) {
-			//square bomb
-			ElimGridListAndGenBomb(verticalList,g);
-			ElimGridListAndGenBomb(horizontalList,g);
-		} else if (horCount >= 5 && verCount >= 3) {
-			//tint bomb
-			ElimGridListAndGenBomb(verticalList,g);
-			ElimGridListAndGenBomb(horizontalList,g);
-		} else if (verCount >= 5 && horCount >= 3) {
-			//tint bomb
-			ElimGridListAndGenBomb(verticalList,g);
-			ElimGridListAndGenBomb(horizontalList,g);
-		}else if(verCount == 2 && horCount == 2)
-		{// check whether is fish
-
-		}else {
-			
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
+		}else if (verCount == 3 || horCount < 3) {
+			//vertical elim
+			finalList.AddRange(upList);
+			finalList.AddRange(downList);
+			ElimGridListAndGenBomb(finalList,g);
+		} else if (verCount < 3 || horCount == 3) {
+			//horizon elim
+			finalList.AddRange(rightList);
+			finalList.AddRange(leftList);
+			ElimGridListAndGenBomb(finalList,g);
 		}
+
+
+
+		// if (verCount < 3 && horCount < 3) {
+			
+		// 	return false;
+		// }
+
+		// if (verCount == 3 || horCount < 3) {
+		// 	//vertical elim
+		// 	ElimGridListAndGenBomb(verticalList,g);
+		// } else if (verCount < 3 || horCount == 3) {
+		// 	//horizon elim
+		// 	ElimGridListAndGenBomb(horizontalList,g);
+		// } else if (verCount == 4 && horCount < 3) {
+		// 	//form horiBomb
+		// 	ElimGridListAndGenBomb(verticalList,g);
+		// } else if (horCount == 4 && verCount < 3) {
+		// 	//form verBomb
+		// 	ElimGridListAndGenBomb(horizontalList,g);
+		// } else if (horCount == 5 && verCount < 3) {
+		// 	//color bomb
+		// 	ElimGridListAndGenBomb(horizontalList,g);
+		
+		// } else if (verCount == 5 && horCount < 3) {
+		// 	//color bomb
+		// 	ElimGridListAndGenBomb(verticalList,g);
+		// } else if (horCount >= 3 && horCount < 5 && verCount >= 3 && verCount < 5) {
+		// 	//square bomb
+		// 	ElimGridListAndGenBomb(verticalList,g);
+		// 	ElimGridListAndGenBomb(horizontalList,g);
+		// } else if (horCount >= 5 && verCount >= 3) {
+		// 	//tint bomb
+		// 	ElimGridListAndGenBomb(verticalList,g);
+		// 	ElimGridListAndGenBomb(horizontalList,g);
+		// } else if (verCount >= 5 && horCount >= 3) {
+		// 	//tint bomb
+		// 	ElimGridListAndGenBomb(verticalList,g);
+		// 	ElimGridListAndGenBomb(horizontalList,g);
+		// }else if(verCount == 2 && horCount == 2)
+		// {// check whether is fish
+
+		// }else {
+			
+		// }
 
 
 
@@ -267,7 +398,7 @@ public class MainManager : MonoBehaviour {
 			{
 				return;
 			}
-			Grid nextGrid = mainGrids[nextRow][nextCol];
+			Grid nextGrid = mainGrids[nextRow,nextCol];
 			curRow = nextRow;
 			curCol = nextCol;
 			if(g.isMatchColor(nextGrid))

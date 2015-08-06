@@ -130,11 +130,23 @@ public class GridsManager  {
 
 	}
 
-	public List<Grid> this[int row]
+	public Grid this[int row,int col]
 	{
 		get
 		{
-			return cellGrids[row];
+			if (row >= cellGrids.Count) 
+			{
+				return null;
+			}
+			var curList = cellGrids[row];
+
+			if (col >= curList.Count) 
+			{
+				return null;
+				
+			}
+
+			return curList[col];
 
 		}
 

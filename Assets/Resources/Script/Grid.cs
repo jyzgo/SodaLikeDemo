@@ -57,8 +57,15 @@ public class Grid : MonoBehaviour {
 		return true;
 	}
 
+
+
 	public bool isMatchColor(Grid oth)
 	{
+		if (oth == null) 
+		{
+			return false;
+			
+		}
 		if(Cell == null || oth.Cell == null)
 		{
 			return false;

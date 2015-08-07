@@ -5,7 +5,7 @@ using System.Linq;
 
 public class MainManager : MonoBehaviour {
 
-	public static MainManager instance;
+
 	
 	GameObject _cellHolder;
 
@@ -13,7 +13,7 @@ public class MainManager : MonoBehaviour {
 
 	CellColor genCellColor()
 	{
-		CellColor curColor = (CellColor)Random.Range (1, 5);
+		CellColor curColor = (CellColor)Random.Range (1, 7);
 
 		return curColor;
 	}
@@ -84,19 +84,30 @@ public class MainManager : MonoBehaviour {
 
 
 	
-	public bool isNormal()
+	public bool isControlAble()
 	{
-		return _state == GameState.Normal;
-	
+		return _state == GameState.Normal && IsCellsStable();
 	}
 
 	public GameState _state {
 		private set;
 		get;
 	}
+
+
 	
 	void PlaySwapCellAction(Grid curGrid,Grid targetGrid,bool isMove)
 	{
+		if (curGrid == null || targetGrid == null) 
+		{
+			return;
+		}
+
+		if (curGrid.Cell == null || targetGrid.Cell == null) 
+		{
+			return;
+		}
+
 		int startRow = curGrid.Row;
 		int startCol = curGrid.Col;
 		int tarRow = targetGrid.Row;
@@ -106,7 +117,10 @@ public class MainManager : MonoBehaviour {
 		targetGrid.Cell.MoveTo (startRow, startCol, Constants.SWAP_TIME);
 
 		mainGrids.SwapCell (curGrid, targetGrid);
+
+
 		_state = GameState.Moving;
+
 
 
 		StartCoroutine (ResetMovingStateAndCheckElim (curGrid, targetGrid,isMove));
@@ -117,10 +131,11 @@ public class MainManager : MonoBehaviour {
 	IEnumerator ResetMovingStateAndCheckElim(Grid l,Grid r,bool isMove)
 	{
 		yield return new WaitForSeconds(Constants.SWAP_TIME);
+		_state = GameState.Normal;
 		if (isMove) {
 			CheckMatch (l, r);
 		} else {
-			_state = GameState.Normal;
+			
 		
 		}
 	}
@@ -182,10 +197,6 @@ public class MainManager : MonoBehaviour {
 
 		int horCount = leftList.Count + rightList.Count + 1;
 		int verCount  = upList.Count + downList.Count + 1;
-
-		Debug.Log ("ver " + verCount + "hor " + horCount);
-
-
 
 		var leftUpGrid = mainGrids [g.Row + 1, g.Col - 1];
 		bool isMatchLeftUp  = g.isMatchColor(leftUpGrid);
@@ -307,8 +318,8 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (leftList);
 			ElimGridListAndGenBomb (finalList, g);
 		} else {
-			Debug.Log("no elim");
-			_state = GameState.Normal;
+//			Debug.Log("no elim");
+			// _state = GameState.Normal;
 			return false;
 		}
 			
@@ -321,10 +332,6 @@ public class MainManager : MonoBehaviour {
 
 	}
 
-	bool TryGenFish(Grid g)
-	{
-		return false;
-	}
 
 	void ElimGridListAndGenBomb(List<Grid> lst,Grid g,BombType genBomb = BombType.None)
 	{
@@ -472,6 +479,45 @@ public class MainManager : MonoBehaviour {
 
 	}
 
+	public void OnCellDroppedAndAdded()
+	{
+		CheckCollapse();
+	}
+
+	void CheckCollapse()
+	{
+		if (!isControlAble()) 
+		{
+			return;
+		}
+		Debug.Log("check collapse");
+		// _state = GameState.Collapsing;
+
+		//横向遍历 找到所有匹配项
+		List<List<Grid>> horizontalList = new List<List<Grid>>();
+		List<List<Grid>> verticalList = new List<List<Grid>>();
+		for (int row = ActiveMinRow; row < ActiveMaxRow; ++row) 
+		{
+			for (int col = ActiveMinCol ; col < ActiveMaxCol; ++col) 
+			{
+				var curGrid = mainGrids[row,col];
+				if (!curGrid.isEmpty()) 
+				{
+					int nextCol = col;
+					List<Grid> matchGrids = new List<Grid>();
+
+				}
+
+
+
+			}
+			
+		}
+
+
+		
+	}
+
 	GameObject gridManager;
 
 	void Start()
@@ -492,18 +538,71 @@ public class MainManager : MonoBehaviour {
 
 	}
 
+	HashSet<CellScript> _movingCells;
 
+	public void AddMovingCell(CellScript curCell)
+	{
+		if (curCell) 
+		{
+			_movingCells.Add(curCell);
+		}
+	}
+
+	public bool IsCellsStable()
+	{
+		return _movingCells.Count == 0;
+	}
+
+	public void RemoveMovingCell(CellScript curCell)
+	{
+
+
+		if (curCell) 
+		{
+			_movingCells.Remove(curCell);	
+
+			if (_movingCells.Count == 0) 
+			{
+				MainManager.instance.OnCellDroppedAndAdded();
+			}		
+		}
+	}
 
 	void Awake()
 	{	
-	 	if (instance != null && instance != this.gameObject) 
-		{
-			Destroy(instance);
-			
-		}
-		instance = this;
-		DontDestroyOnLoad(instance.gameObject);
+		_movingCells = new HashSet<CellScript>();
 
+	}
+
+	//----
+
+	static MainManager _instance;
+	
+	static public bool isActive { 
+		get { 
+			return _instance != null; 
+		} 
+	}
+
+	
+	static public MainManager instance
+	{
+		get
+		{
+			if (_instance == null)
+			{
+				_instance = Object.FindObjectOfType(typeof(MainManager)) as MainManager;
+	
+				if (_instance == null)
+				{
+					GameObject go = new GameObject("_MainManager");
+					DontDestroyOnLoad(go);
+					_instance = go.AddComponent<MainManager>();
+
+				}
+			}
+			return _instance;
+		}
 	}
 
 

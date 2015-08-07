@@ -133,11 +133,20 @@ public class CellScript : MonoBehaviour {
 		if (transform.position == targetPosition) 
 		{
 			canMove = false;
+			MainManager.instance.RemoveMovingCell(this);
 			
 		}
 		
 	}
 
+	void OnDestroy()
+	{
+		if (canMove) 
+		{
+			MainManager.instance.RemoveMovingCell(this);
+		}
+
+	}
 
 
 	public void MoveTo(int row,int col,float moveTime = 0f)
@@ -155,15 +164,13 @@ public class CellScript : MonoBehaviour {
 		                             Zorder.cell);
 		moveLength = Vector3.Distance(transform.position, targetPosition);
 		canMove = true;
-	}
 
-	public void SetSelectedEffect() {
+		MainManager.instance.AddMovingCell(this);
 
-	}
-
-	public void UnsetSelectedEffect() {
 
 	}
+
+
 
 
 }

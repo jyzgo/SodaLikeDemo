@@ -15,7 +15,9 @@ public enum CellColor {
 public enum GameState
 {
 	Normal,
-	Moving
+	Moving,
+	Backing,
+	Collapsing
 }
 
 public enum CellType

@@ -98,7 +98,14 @@ public class Grid : MonoBehaviour {
 		{
 			Destroy(Cell.gameObject,t);
 			Cell = null;
+			StartCoroutine (beUnstable (t));
 		}
+	}
+
+	IEnumerator beUnstable(float t)
+	{
+		yield return new WaitForSeconds(t);
+
 	}
 
 	Vector3 startPos;
@@ -120,7 +127,7 @@ public class Grid : MonoBehaviour {
 	void beSelected()
 	{
 
-		if (!MainManager.instance.isNormal()) 
+		if (!MainManager.instance.isControlAble()) 
 		{
 			return;
 		}
@@ -138,7 +145,7 @@ public class Grid : MonoBehaviour {
 		}
 
 
-		if (!MainManager.instance.isNormal()) 
+		if (!MainManager.instance.isControlAble()) 
 		{
 			return;
 		}

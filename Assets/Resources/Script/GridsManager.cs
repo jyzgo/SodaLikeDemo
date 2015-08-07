@@ -130,12 +130,15 @@ public class GridsManager:MonoBehaviour  {
 
 	public bool SetCell(CellScript sc ,int row,int col)
 	{
-
-		
 		var grid = cellGrids[row][col];
 		if (grid.Cell != null) 
 		{
 			return false;
+		}
+
+		if (grid.Cell != null) 
+		{
+			Debug.LogError("grid is not empty");
 		}
 		grid.Cell = sc;
 		grid.Cell.SetPos(row,col);
@@ -165,10 +168,7 @@ public class GridsManager:MonoBehaviour  {
 		}
 
 	}
-
-
-    
-
+	
 	public bool Destroy(int row,int col)
 	{
 		var grid = cellGrids[row][col];
@@ -188,12 +188,13 @@ public class GridsManager:MonoBehaviour  {
 
 
 
-	void Awake()
+
+
+
+	void init()
 	{
-		
 		_curMaxRow = MainManager.instance.LevelMaxRow;
 		_curMaxCol = MainManager.instance.LevelMaxCol;
-
 
 
 		cellGrids = new List<List<Grid>>(_curMaxRow);
@@ -208,6 +209,7 @@ public class GridsManager:MonoBehaviour  {
 			cellGrids.Add(colList);
 			for (int col = 0 ; col < _curMaxCol; ++col) 
 			{
+
 				GameObject curGrid = Object.Instantiate(grid);
 				curGrid.transform.position = getPos(row,col,Zorder.grid);
 				curGrid.transform.parent = _gridHolder.transform;
@@ -217,6 +219,41 @@ public class GridsManager:MonoBehaviour  {
 
 			}
 
+		}
+
+	}
+
+	void Awake()
+	{
+
+		init();
+
+	}
+
+	static GridsManager _instance;
+ 
+	static public bool isActive { 
+		get { 
+			return _instance != null; 
+		} 
+	}
+ 
+	static public GridsManager instance
+	{
+		get
+		{
+			if (_instance == null)
+			{
+				_instance = Object.FindObjectOfType(typeof(GridsManager)) as GridsManager;
+ 
+				if (_instance == null)
+				{
+					GameObject go = new GameObject("_GridManager");
+					DontDestroyOnLoad(go);
+					_instance = go.AddComponent<GridsManager>();
+				}
+			}
+			return _instance;
 		}
 	}
 

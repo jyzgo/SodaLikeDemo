@@ -56,6 +56,10 @@ public static class Constants
 	public const float CELLS_BOTTOM = -4.7f;
 	public const float SWAP_TIME = 0.3f;
 	public const float FORM_TIME = 0.13f;
+
+	public const float CELL_ELIM_TIME = 0.13f;
+
+
 }
 
 

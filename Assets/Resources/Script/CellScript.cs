@@ -119,24 +119,52 @@ public class CellScript : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		if(!canMove)
+		if(canMove)
+		{
+			float distCoverd = (Time.time - startMoveTime)* speed;
+			float fracJourney = distCoverd/moveLength;
+
+
+		    transform.position=Vector3.Lerp(transform.position,targetPosition,fracJourney);//移动到指定位置
+			
+			if (transform.position == targetPosition) 
+			{
+				canMove = false;
+				MainManager.instance.RemoveMovingCell(this);
+				
+			}
+		}
+
+		if (_canScale) 
+		{
+			var curScale = transform.localScale;
+			var tarScale = new Vector3(curScale.x * elimScale,curScale.y * elimScale ,curScale.z * elimScale);
+			transform.localScale = Vector3.Lerp(transform.localScale,tarScale,Time.deltaTime * _scaleSpeed);
+		}
+		
+	}
+
+	const float elimScale = 0.1f;
+	float _scaleTime ;
+	bool _canScale = false;
+	float _startScaleTime =0f;
+	float _scaleSpeed = 0f;
+
+	public void PlayElimAnim(float t)
+	{
+		if (t == 0f) 
 		{
 			return;
 		}
 
-		float distCoverd = (Time.time - startMoveTime)* speed;
-		float fracJourney = distCoverd/moveLength;
+		float oriScale = transform.localScale.x;
+		float targetScale = elimScale;
 
+		_scaleSpeed = Mathf.Abs((targetScale - oriScale))/t;
 
-	    transform.position=Vector3.Lerp(transform.position,targetPosition,fracJourney);//移动到指定位置
-		
-		if (transform.position == targetPosition) 
-		{
-			canMove = false;
-			MainManager.instance.RemoveMovingCell(this);
-			
-		}
-		
+		_scaleTime = t;
+		_canScale = true;
+
 	}
 
 	void OnDestroy()

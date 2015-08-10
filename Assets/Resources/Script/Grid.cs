@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Grid : MonoBehaviour {
@@ -41,7 +41,16 @@ public class Grid : MonoBehaviour {
 		set;
 		get;
 	}
-	
+	public bool isBombable()
+	{
+		if (isEmpty()) 
+		{
+			return false;
+		}
+
+		return true;
+	}
+
 	public GameObject gridBg {
 		set;
 		get;
@@ -92,21 +101,23 @@ public class Grid : MonoBehaviour {
 		return Cell == null ? true: false;
 	}
 	
-	public void DestroyCell(float t = 0f)
+	public void DestroyCell(float t = 0f,bool isPlayElim = false)
 	{
 		if (Cell != null) 
 		{
+			if (isPlayElim) 
+			{
+				Cell.PlayElimAnim(t);
+			}
+			
 			Destroy(Cell.gameObject,t);
 			Cell = null;
-			StartCoroutine (beUnstable (t));
+
 		}
 	}
 
-	IEnumerator beUnstable(float t)
-	{
-		yield return new WaitForSeconds(t);
 
-	}
+
 
 	Vector3 startPos;
 	void OnMouseDown()

@@ -169,14 +169,14 @@ public class GridsManager:MonoBehaviour  {
 
 	}
 	
-	public bool Destroy(int row,int col)
+	public bool Destroy(int row,int col,float t = 0f)
 	{
 		var grid = cellGrids[row][col];
 		if (grid.Cell == null) 
 		{
 			return false;
 		}
-		grid.DestroyCell();
+		grid.DestroyCell(t);
 		return true;
 
 	}

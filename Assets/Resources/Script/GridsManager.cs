@@ -212,7 +212,7 @@ public class GridsManager:MonoBehaviour  {
 
 				GameObject curGrid = Object.Instantiate(grid);
 				curGrid.transform.position = getPos(row,col,Zorder.grid);
-				curGrid.transform.parent = _gridHolder.transform;
+				curGrid.transform.SetParent(_gridHolder.transform);
 				var curScrit = curGrid.GetComponent<Grid>();
 				curScrit.init(row,col);
 				colList.Add(curScrit);

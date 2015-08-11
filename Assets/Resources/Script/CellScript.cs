@@ -41,9 +41,24 @@ public class CellScript : MonoBehaviour {
 		}
 	}
 
+	public void highZorder()
+	{
+		var curPos = transform.position;
+		transform.position = new Vector3(curPos.x,curPos.y,Zorder.high);
+	}
+
+	public void backZorder()
+	{
+		var curPos = transform.position;
+		transform.position = new Vector3(curPos.x,curPos.y,Zorder.cell);
+	}
 
 	public void updateCell(float delayTime = 0f)
 	{
+		string spritePath = _cellType.ToString() +_cellBombType.ToString()+ _cellColor.ToString();
+
+		Sprite newSprite = Resources.Load("Sprite/Cells/"+spritePath,typeof(Sprite)) as Sprite;
+		GetComponent<SpriteRenderer>().sprite = newSprite;
 		StartCoroutine(DoUpdateCell(delayTime));
 
 	}
@@ -53,10 +68,8 @@ public class CellScript : MonoBehaviour {
 		yield return new WaitForSeconds(delayTime);
 		if (_cellColor != CellColor.None && _cellType != CellType.None) {
 
-			string spritePath = _cellType.ToString() +_cellBombType.ToString()+ _cellColor.ToString();
 
-			Sprite newSprite = Resources.Load("Sprite/Cells/"+spritePath,typeof(Sprite)) as Sprite;
-			GetComponent<SpriteRenderer>().sprite = newSprite;
+			backZorder();
 			
 		} else {
 
@@ -169,7 +182,7 @@ public class CellScript : MonoBehaviour {
 
 	void OnDestroy()
 	{
-		if (canMove) 
+		if (MainManager.instance) 
 		{
 			MainManager.instance.RemoveMovingCell(this);
 		}

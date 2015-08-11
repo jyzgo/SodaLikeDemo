@@ -13,7 +13,7 @@ public class MainManager : MonoBehaviour {
 
 	CellColor genCellColor()
 	{
-		CellColor curColor = (CellColor)Random.Range (1, 7);
+		CellColor curColor = (CellColor)Random.Range (1, Constants.CORLOR_NUM);
 
 		return curColor;
 	}
@@ -157,11 +157,11 @@ public class MainManager : MonoBehaviour {
 
 			bool leftElim = TryElim(l) ;
 			if (leftElim) {
-				Debug.Log ("lll row " + l.Row + " col " + l.Col);
+//				Debug.Log ("lll row " + l.Row + " col " + l.Col);
 			}
 			bool rightElim = TryElim(r);
 			if (rightElim) {
-				Debug.Log ("rrr row " + r.Row + " col " + r.Col);
+//				Debug.Log ("rrr row " + r.Row + " col " + r.Col);
 			}
 			bool isElimAble = leftElim || rightElim;
 			if(isElimAble)
@@ -346,6 +346,7 @@ public class MainManager : MonoBehaviour {
 		} else {
 			g.Cell.cellType = CellType.Bomb;
 			g.Cell.cellBombType = genBomb;
+			g.Cell.highZorder();
 			g.Cell.updateCell (Constants.FORM_TIME);
 			for (int i = 0; i < lst.Count; ++i) {
 				Grid curGrid = lst [i];
@@ -495,7 +496,7 @@ public class MainManager : MonoBehaviour {
 			for (int curCol = ActiveMinCol ; curCol < ActiveMaxCol; ++curCol) 
 			{
 				var curGrid = mainGrids[curRow,curCol];
-				Debug.Log ("horr row " + curRow + "col" + curCol);
+
 				if (!curGrid.isBombable()) 
 				{
 					continue;
@@ -544,7 +545,6 @@ public class MainManager : MonoBehaviour {
 		{
 			for (int curRow = ActiveMinRow ; curRow < ActiveMaxRow; ++curRow) 
 			{
-				Debug.Log ("horr row " + curRow + "col" + curCol);
 				var curGrid = mainGrids[curRow,curCol];
 				if (!curGrid.isBombable()) 
 				{
@@ -600,8 +600,8 @@ public class MainManager : MonoBehaviour {
 		List<List<Grid>> horizontalList = getHorizontalMatchedList();
 		List<List<Grid>> verticalList 	= getVerticalMatchedList();
 
-		Debug.Log("hor count "+ horizontalList.Count);
-		Debug.Log("ver count "+ verticalList.Count);
+//		Debug.Log("hor count "+ horizontalList.Count);
+//		Debug.Log("ver count "+ verticalList.Count);
 
 		List<Grid> finalKeyList = new List<Grid>();
 
@@ -619,7 +619,7 @@ public class MainManager : MonoBehaviour {
 			}
 		}
 
-		Debug.Log ("finnnn  cout " + finalKeyList.Count);
+//		Debug.Log ("finnnn  cout " + finalKeyList.Count);
 
 		for(int i = 0 ; i < verticalList.Count; i++)
 		{
@@ -630,7 +630,7 @@ public class MainManager : MonoBehaviour {
 		for(int i = 0 ; i < finalKeyList.Count ; i ++)
 		{
 			var grid = finalKeyList[i];
-			Debug.Log("fin row " + grid.Row + "col" + grid.Col);
+//			Debug.Log("fin row " + grid.Row + "col" + grid.Col);
 			TryElim(finalKeyList[i]);
 
 		}
@@ -669,7 +669,7 @@ public class MainManager : MonoBehaviour {
 	{
 		LevelMaxRow = Constants.MAX_ROWS;
 		LevelMaxCol = Constants.MAX_COLS;
-		gridManager = new GameObject();
+		gridManager = new GameObject("GridsManager");
 		gridManager.AddComponent<GridsManager>();
 
 
@@ -740,13 +740,46 @@ public class MainManager : MonoBehaviour {
 	
 				if (_instance == null)
 				{
-					GameObject go = new GameObject("_MainManager");
-					DontDestroyOnLoad(go);
-					_instance = go.AddComponent<MainManager>();
+					// GameObject go = new GameObject("_MainManager");
+					// DontDestroyOnLoad(go);
+					// _instance = go.AddComponent<MainManager>();
 
 				}
 			}
 			return _instance;
+		}
+	}
+
+	void OnGUI()
+	{
+		DebugGUI ();
+	}
+
+
+
+
+	public DebugTools _debugTool = DebugTools.None;
+
+	void DebugGUI()
+	{
+		if (!Constants.DEBUG_MODE) 
+		{
+			return;
+		}
+
+		if (GUILayout.Button ("spoon")) 
+		{
+			
+			if (_debugTool != DebugTools.Spoon) 
+			{
+				_debugTool = DebugTools.Spoon;
+				Debug.Log ("spoon On");
+			}else
+			{
+				_debugTool = DebugTools.None;
+				Debug.Log ("spoon Off");
+			}
+			
 		}
 	}
 

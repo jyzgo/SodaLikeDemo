@@ -143,6 +143,16 @@ public class Grid : MonoBehaviour {
 			return;
 		}
 
+		if(MainManager.instance._debugTool == DebugTools.Spoon)
+		{
+			var gridMgr = (GameObject.Find("GridsManager")).GetComponent<GridsManager>();
+			DestroyCell(Constants.CELL_ELIM_TIME,true);
+			gridMgr.DropCell (Constants.FORM_TIME + 0.1f);
+			gridMgr.DropNewCells (Constants.FORM_TIME + 0.1f);
+			
+			return;
+		}
+
 		isBeSelected = true;
 		startPos = Input.mousePosition;
 		MainManager.instance.SelectGrid (Row,Col);
@@ -170,7 +180,7 @@ public class Grid : MonoBehaviour {
 		}
 		int offsetRow = -10;
 		int offsetCol = - 10;
-		Debug.Log ("be drag row " + Row + " Col " + Col);
+//		Debug.Log ("be drag row " + Row + " Col " + Col);
 		if (f >= 0.5) 
 		{
 			offsetRow = 1;
@@ -211,6 +221,8 @@ public class Grid : MonoBehaviour {
 			}
 
 		}
+
+
 
 
 

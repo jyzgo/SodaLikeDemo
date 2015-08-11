@@ -603,7 +603,7 @@ public class MainManager : MonoBehaviour {
 //		Debug.Log("hor count "+ horizontalList.Count);
 //		Debug.Log("ver count "+ verticalList.Count);
 
-		List<Grid> finalKeyList = new List<Grid>();
+		List<List<Grid>> finalKeyList = new List<List<Grid>>();
 
 
 		for(int i = 0; i < horizontalList.Count ;i++)
@@ -612,34 +612,37 @@ public class MainManager : MonoBehaviour {
 			{
 				if(mergeMatchPatten(horizontalList[i],verticalList[j],finalKeyList))
 				{
-					verticalList.Remove(verticalList[j]);
-					break;
+					// verticalList.Remove(verticalList[j]);
+					// break;
 				}
 
 			}
 		}
 
-//		Debug.Log ("finnnn  cout " + finalKeyList.Count);
-
-		for(int i = 0 ; i < verticalList.Count; i++)
+		for(int i = 0 ; i < finalKeyList.Count ;i++)
 		{
-			finalKeyList.Add(verticalList[i][0]);
-
+			
 		}
 
-		for(int i = 0 ; i < finalKeyList.Count ; i ++)
-		{
-			var grid = finalKeyList[i];
-//			Debug.Log("fin row " + grid.Row + "col" + grid.Col);
-			TryElim(finalKeyList[i]);
 
-		}
+		// for(int i = 0 ; i < verticalList.Count; i++)
+		// {
+		// 	finalKeyList.Add(verticalList[i][0]);
+
+		// }
+
+		// for(int i = 0 ; i < finalKeyList.Count ; i ++)
+		// {
+		// 	var grid = finalKeyList[i];
+		// 	TryElim(finalKeyList[i]);
+
+		// }
 
 
 		
 	}
 
-	bool mergeMatchPatten(List<Grid> horizonList ,List<Grid> verticalList,List<Grid> finalKeyList)
+	bool mergeMatchPatten(List<Grid> horizonList ,List<Grid> verticalList,List<List<Grid>> finalKeyList)
 	{
 		bool isMergeable = false;
 		for(int i = 0; i < horizonList.Count ;++i)
@@ -648,7 +651,11 @@ public class MainManager : MonoBehaviour {
 			{
 				if (horizonList[i] == verticalList[j]) 
 				{
-					finalKeyList.Add(verticalList[j]);
+					var curList = new List<Grid>();
+					curList.AddRange(horizonList);
+					curList.AddRange(verticalList);
+					finalKeyList.Add(curList);
+
 					isMergeable =  true;
 					break;
 				}
@@ -657,7 +664,8 @@ public class MainManager : MonoBehaviour {
 
 		if (!isMergeable) 
 		{
-			finalKeyList.Add(horizonList[0]);
+			finalKeyList.Add(horizonList);
+			finalKeyList.Add(verticalList);
 		}
 
 		return isMergeable;

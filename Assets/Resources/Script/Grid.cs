@@ -3,6 +3,18 @@ using System.Collections;
 
 public class Grid : MonoBehaviour {
 
+	GridMark _markState = GridMark.NoMark;
+	public GridMark MarkState{
+		set
+		{
+			_markState = value;
+		}
+		get
+		{
+			return _markState;
+		}
+	}
+
 	public void init(int row,int col)
 	{
 		Row = row;

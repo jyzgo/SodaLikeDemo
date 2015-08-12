@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 public class MainManager : MonoBehaviour {
 
@@ -152,20 +153,24 @@ public class MainManager : MonoBehaviour {
 			//same color no need check ,just back
 			PlayBackAction();
 		} else {
-			//
-//			Debug.Log("not same");
-
-			bool leftElim = TryElim(l) ;
+			List<Grid> leftList;
+			BombType leftBombType;
+			bool leftElim = TryElim(l,out leftList, out leftBombType) ;
 			if (leftElim) {
-//				Debug.Log ("lll row " + l.Row + " col " + l.Col);
+				ElimGridListAndGenBomb (leftList, l,leftBombType);
 			}
-			bool rightElim = TryElim(r);
+			List<Grid> rightList;
+			BombType rightBombType;
+			bool rightElim = TryElim(r,out rightList,out rightBombType);
 			if (rightElim) {
-//				Debug.Log ("rrr row " + r.Row + " col " + r.Col);
+				ElimGridListAndGenBomb (rightList, r,rightBombType);
 			}
 			bool isElimAble = leftElim || rightElim;
 			if(isElimAble)
 			{
+				mainGrids.DropCell (Constants.FORM_TIME + 0.1f);
+				mainGrids.DropNewCells (Constants.FORM_TIME + 0.1f);
+
 
 			}else
 			{
@@ -178,8 +183,11 @@ public class MainManager : MonoBehaviour {
 
 
 
-	bool TryElim(Grid g)
+	bool TryElim(Grid g,out List<Grid> finalList,out BombType curBombType)
 	{
+
+		finalList = new List<Grid>();
+		curBombType = BombType.None;
 
 		List<Grid> leftList = new List<Grid>();
 		CheckSameColorAndAdd(g,0,-1,leftList);
@@ -211,7 +219,7 @@ public class MainManager : MonoBehaviour {
 		bool isMatchDownLeft = g.isMatchColor(downLeftGrid);
 
 		//striped candy
-		List<Grid> finalList = new List<Grid>();
+		// List<Grid> finalList = new List<Grid>();
 		if (verCount >= 5 && horCount >= 2) {
 			//Coloring candy
 			Debug.Log("Coloring candy");
@@ -219,7 +227,8 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (downList);
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
-			ElimGridListAndGenBomb (finalList, g,BombType.Coloring);
+			curBombType = BombType.Coloring;
+			// ElimGridListAndGenBomb (finalList, g,BombType.Coloring);
 			
 		} else if (horCount >= 5 && verCount >= 2) {
 			//Coloring candy
@@ -228,7 +237,8 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (downList);
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
-			ElimGridListAndGenBomb (finalList, g,BombType.Coloring);
+			// ElimGridListAndGenBomb (finalList, g,BombType.Coloring);
+			curBombType = BombType.Coloring;
 		} else if (verCount >= 5 && horCount == 1) {
 			//color candy	
 			Debug.Log("Color candy");
@@ -236,7 +246,8 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (downList);
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
-			ElimGridListAndGenBomb (finalList, g,BombType.Color);
+			// ElimGridListAndGenBomb (finalList, g,BombType.Color);
+			curBombType = BombType.Color;
 		} else if (horCount >= 5 && verCount == 1) {
 			//color candy
 			Debug.Log("Color candy");
@@ -244,7 +255,7 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (downList);
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
-			ElimGridListAndGenBomb (finalList, g,BombType.Color);
+			curBombType = BombType.Color;
 		} else if (leftList.Count > 0 && upList.Count > 0 && isMatchLeftUp) {
 			//fish candy
 			Debug.Log("fish1 candy");
@@ -253,7 +264,7 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
 			finalList.Add (leftUpGrid);
-			ElimGridListAndGenBomb (finalList, g,BombType.Fish);
+			curBombType = BombType.Fish;
 			
 		} else if (upList.Count > 0 && rightList.Count > 0 && isMatchUpRight) {
 			//fish candy
@@ -263,7 +274,7 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
 			finalList.Add (upRightGrid);
-			ElimGridListAndGenBomb (finalList, g,BombType.Fish);
+			curBombType = BombType.Fish;
 			
 		} else if (rightList.Count > 0 && downList.Count > 0 && isMatchRightDown) {
 			//fish candy
@@ -273,7 +284,7 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
 			finalList.Add (rightDownGrid);
-			ElimGridListAndGenBomb (finalList, g,BombType.Fish);
+			curBombType = BombType.Fish;
 			
 		} else if (downList.Count > 0 && leftList.Count > 0 && isMatchDownLeft) {
 			//fish candy
@@ -283,7 +294,7 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
 			finalList.Add (downLeftGrid);
-			ElimGridListAndGenBomb (finalList, g,BombType.Fish);
+			curBombType = BombType.Fish;
 			
 		} else if (horCount >= 3 && horCount < 5 && verCount >= 3 && verCount < 5) {
 			//square bomb
@@ -292,19 +303,19 @@ public class MainManager : MonoBehaviour {
 			finalList.AddRange (downList);
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
-			ElimGridListAndGenBomb (finalList, g,BombType.Square);
+			curBombType = BombType.Square;
 		} else if (verCount == 4 && horCount < 3) {
 			//form hor
 			Debug.Log("hor candy");
 			finalList.AddRange (upList);
 			finalList.AddRange (downList);
-			ElimGridListAndGenBomb (finalList, g,BombType.Horizontal);
+			curBombType = BombType.Horizontal;
 		} else if (horCount == 4 && verCount < 3) {
 			//form verBomb
 			Debug.Log("ver candy");
 			finalList.AddRange (rightList);
 			finalList.AddRange (leftList);
-			ElimGridListAndGenBomb (finalList, g,BombType.Vertical);
+			curBombType = BombType.Vertical;
 		} else if (verCount == 3 && horCount < 3) {
 			//vertical elim
 			Debug.Log("verelim candy");
@@ -324,8 +335,8 @@ public class MainManager : MonoBehaviour {
 		}
 			
 
-		mainGrids.DropCell (Constants.FORM_TIME + 0.1f);
-		mainGrids.DropNewCells (Constants.FORM_TIME + 0.1f);
+		// mainGrids.DropCell (Constants.FORM_TIME + 0.1f);
+		// mainGrids.DropNewCells (Constants.FORM_TIME + 0.1f);
 		
 		return true;
 
@@ -335,6 +346,11 @@ public class MainManager : MonoBehaviour {
 
 	void ElimGridListAndGenBomb(List<Grid> lst,Grid g,BombType genBomb = BombType.None)
 	{
+		if (lst.Count == 0) 
+		{
+			return;
+		}
+
 		if (genBomb == BombType.None) {
 			g.DestroyCell (Constants.CELL_ELIM_TIME,true);
 			for (int i = 0; i < lst.Count; ++i) {
@@ -484,7 +500,6 @@ public class MainManager : MonoBehaviour {
 
 	public void OnCellDroppedAndAdded()
 	{
-		Debug.Log("droopped");
 		CheckCollapse();
 	}
 
@@ -587,12 +602,51 @@ public class MainManager : MonoBehaviour {
 
 	}
 
+
+
+	void TryAddSameColor(Grid curGrid,List<Grid> curList)
+	{
+		//up
+		var upGrid = mainGrids[curGrid.Row + 1,curGrid.Col];
+		//left
+		//right
+		//down
+	}
+
+
+
+
+
+
 	void CheckCollapse()
 	{
 		if (!isControlAble()) 
 		{
 			return;
 		}
+
+		List<List<Grid>> sameColorCollections = new List<List<Grid>>();
+
+
+		for (int curRow = ActiveMinRow; curRow < ActiveMaxRow; ++curRow) 
+		{
+			for (int curCol = ActiveMinCol ; curCol < ActiveMaxCol; ++curCol) 
+			{
+				//查找所有连续颜色在两个以上的集合
+				//四个方向找
+				var curGrid = mainGrids[curRow,curCol];
+				var gridList = new List<Grid>();
+				if (!curGrid.isBombable()) 
+				{
+					continue;
+				}
+				TryAddSameColor(curGrid,gridList);
+
+			}
+		}
+
+		return;
+
 
 		// _state = GameState.Collapsing;
 
@@ -625,18 +679,7 @@ public class MainManager : MonoBehaviour {
 		}
 
 
-		// for(int i = 0 ; i < verticalList.Count; i++)
-		// {
-		// 	finalKeyList.Add(verticalList[i][0]);
 
-		// }
-
-		// for(int i = 0 ; i < finalKeyList.Count ; i ++)
-		// {
-		// 	var grid = finalKeyList[i];
-		// 	TryElim(finalKeyList[i]);
-
-		// }
 
 
 		
@@ -710,7 +753,7 @@ public class MainManager : MonoBehaviour {
 	{
 
 
-		if (curCell) 
+		if (curCell && MainManager.instance) 
 		{
 			_movingCells.Remove(curCell);	
 
@@ -721,9 +764,21 @@ public class MainManager : MonoBehaviour {
 		}
 	}
 
+	static readonly IList<GridDir> _dirs = new ReadOnlyCollection<GridDir>
+	(
+		new[]{
+			new GridDir(1,0),
+			new GridDir(-1,0),
+			new GridDir(0,-1),
+			new GridDir(0,1)
+		}
+	);
+
 	void Awake()
 	{	
 		_movingCells = new HashSet<CellScript>();
+
+
 
 	}
 

@@ -38,6 +38,24 @@ public enum BombType
 	Coloring
 }
 
+public enum GridMark
+{
+	NoMark,
+	Marking,
+	Marked
+}
+
+public struct GridDir 
+{
+	int offsetRow;
+	int offsetCol;
+	public GridDir(int curRow,int curCol)
+	{
+		offsetRow = curRow;
+		offsetCol = curCol;
+	}
+}
+
 
 
 public static class Zorder
@@ -65,8 +83,6 @@ public static class Constants
 	public const int CORLOR_NUM = 5;
 
 	public const bool DEBUG_MODE = true;
-
-
 }
 
 

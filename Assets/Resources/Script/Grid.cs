@@ -77,6 +77,35 @@ public class Grid : MonoBehaviour {
 		}
 		return true;
 	}
+	int _verticalCount = 0;
+	public int verticalCount {
+		set{
+			_verticalCount = value;
+			if (value != 0) 
+			{
+				Cell.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
+			}
+		}
+		get{
+			return _verticalCount;
+		}
+	}
+
+	int _horzonCount = 0;
+	public int horizonCount {
+		set{
+			_horzonCount = value;
+			if (value != 0) 
+			{
+				Cell.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
+			}
+		}
+		get{
+			return _horzonCount;
+		}
+	}
+	public bool isCenter = false;
+	public int mPriority = 0;
 
 	public void MoveToAndElim(Grid g,float moveTime)
 	{

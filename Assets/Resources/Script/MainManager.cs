@@ -147,35 +147,153 @@ public class MainManager : MonoBehaviour {
 
 	}
 
+
+	List<List<Grid>> getMatchList(bool isHorizon)
+	{
+		var groupList = new List<List<Grid>>();
+
+		int outterMin;
+		int outterMax;
+		int innerMin;
+		int innerMax;
+
+		if (isHorizon) 
+		{
+			outterMin = ActiveMinRow;
+			outterMax = ActiveMaxRow;
+
+			innerMin = ActiveMinCol;
+			innerMax = ActiveMaxCol;
+
+		}else
+		{
+			outterMin = ActiveMinCol;
+			outterMax = ActiveMaxCol;
+
+			innerMin = ActiveMinRow;
+			innerMax = ActiveMaxRow;
+		}
+
+		for(int outterValue = outterMin ; outterValue < outterMax ; outterValue ++)
+		{
+
+			var curList = new List<Grid>();
+
+			for(int innerValue = innerMin ; innerValue < innerMax ; innerValue ++)
+			{
+				Grid curGrid;
+				if (isHorizon) 
+				{
+					curGrid = mainGrids[outterValue,innerValue];
+				}else {
+					curGrid = mainGrids[innerValue,outterValue];
+				}
+				
+				if (curList.Count == 0 ) 
+				{
+					if (curGrid.isBombable()) 
+					{
+						curList.Add(curGrid);
+						
+					}
+				}
+				else
+				{
+
+					if (curList[0].isMatchColor(curGrid) && curGrid.isBombable()) 
+					{
+						curList.Add(curGrid);
+						
+					}else
+					{
+						if (curList.Count >= 3) 
+						{
+							for(int i = 0 ;i < curList.Count ; i ++)
+							{
+								if (isHorizon) 
+								{
+									curList[i].horizonCount = curList.Count;
+								}else
+								{
+									curList[i].verticalCount = curList.Count;
+								}
+								
+							}
+							groupList.Add(curList);
+							
+						}
+						
+						curList = new List<Grid>();
+						if (curGrid.isBombable()) 
+						{
+							curList.Add(curGrid);
+						}
+						
+						
+					}
+						
+				}
+					
+
+			}
+						
+
+
+			if (curList.Count >= 3) 
+			{
+				for(int i = 0 ;i < curList.Count ; i ++)
+				{
+					if (isHorizon) 
+					{
+						curList[i].horizonCount = curList.Count;
+					}else
+					{
+						curList[i].verticalCount = curList.Count;
+					}
+					
+				}
+				groupList.Add(curList);
+				
+			}
+		}
+
+		return groupList;
+	}
+
 	void CheckMatch(Grid l ,Grid r)
 	{
 		if (l.isMatchColor (r)) {
 			//same color no need check ,just back
 			PlayBackAction();
 		} else {
-			List<Grid> leftList;
-			BombType leftBombType;
-			bool leftElim = TryElim(l,out leftList, out leftBombType) ;
-			if (leftElim) {
-				ElimGridListAndGenBomb (leftList, l,leftBombType);
-			}
-			List<Grid> rightList;
-			BombType rightBombType;
-			bool rightElim = TryElim(r,out rightList,out rightBombType);
-			if (rightElim) {
-				ElimGridListAndGenBomb (rightList, r,rightBombType);
-			}
-			bool isElimAble = leftElim || rightElim;
-			if(isElimAble)
-			{
-				mainGrids.DropCell (Constants.FORM_TIME + 0.1f);
-				mainGrids.DropNewCells (Constants.FORM_TIME + 0.1f);
+
+			var horizonList = getMatchList(false);
 
 
-			}else
-			{
-				PlayBackAction();
-			}
+
+			// List<Grid> leftList;
+			// BombType leftBombType;
+			// bool leftElim = TryElim(l,out leftList, out leftBombType) ;
+			// if (leftElim) {
+			// 	ElimGridListAndGenBomb (leftList, l,leftBombType);
+			// }
+			// List<Grid> rightList;
+			// BombType rightBombType;
+			// bool rightElim = TryElim(r,out rightList,out rightBombType);
+			// if (rightElim) {
+			// 	ElimGridListAndGenBomb (rightList, r,rightBombType);
+			// }
+			// bool isElimAble = leftElim || rightElim;
+			// if(isElimAble)
+			// {
+			// 	mainGrids.DropCell (Constants.FORM_TIME + 0.1f);
+			// 	mainGrids.DropNewCells (Constants.FORM_TIME + 0.1f);
+
+
+			// }else
+			// {
+			// 	PlayBackAction();
+			// }
 
 		}
 

@@ -503,120 +503,133 @@ public class MainManager : MonoBehaviour {
 		CheckCollapse();
 	}
 
-	List<List<Grid>> getHorizontalMatchedList()
+	
+
+	List<List<Grid>> getMatchList(bool isHorizon)
 	{
-		List<List<Grid>> horizontalList = new List<List<Grid>>();
-		for (int curRow = ActiveMinRow; curRow < ActiveMaxRow; ++curRow) 
-		{
-			for (int curCol = ActiveMinCol ; curCol < ActiveMaxCol; ++curCol) 
-			{
-				var curGrid = mainGrids[curRow,curCol];
+		const int countMin = 2;
+		var groupList = new List<List<Grid>> ();
 
-				if (!curGrid.isBombable()) 
-				{
-					continue;
+		int outterMin;
+		int outterMax;
+		int innerMin;
+		int innerMax;
+
+		if (isHorizon) {
+			outterMin = ActiveMinRow;
+			outterMax = ActiveMaxRow;
+
+			innerMin = ActiveMinCol;
+			innerMax = ActiveMaxCol;
+
+		} else {
+			outterMin = ActiveMinCol;
+			outterMax = ActiveMaxCol;
+
+			innerMin = ActiveMinRow;
+			innerMax = ActiveMaxRow;
+		}
+
+		for (int outterValue = outterMin; outterValue < outterMax; outterValue++) {
+
+			var curList = new List<Grid> ();
+
+			for (int innerValue = innerMin; innerValue < innerMax; innerValue++) {
+				Grid curGrid;
+				if (isHorizon) {
+					curGrid = mainGrids [outterValue, innerValue];
+				} else {
+					curGrid = mainGrids [innerValue, outterValue];
 				}
-				int nextCol = curCol ;
-				List<Grid> matchGrids = new List<Grid>();
+				
+				if (curList.Count == 0) {
+					if (curGrid.isBombable ()) {
+						curList.Add (curGrid);
+						
+					}
+				} else {
 
-				while (curRow < ActiveMaxRow && nextCol < ActiveMaxCol && mainGrids[curRow,nextCol].isBombable() 
-					&& mainGrids[curRow,curCol].isMatchColor(mainGrids[curRow,nextCol])) 
-				{
-					matchGrids.Add(mainGrids[curRow,nextCol]);
-					nextCol++;
+					if (curList [0].isMatchColor (curGrid) && curGrid.isBombable ()) {
+						curList.Add (curGrid);
+						
+					} else {
+						if (curList.Count >= countMin) 
+						{
+							for(int i  = 0 ; i < curList.Count; ++i)
+							{
+								if (isHorizon) 
+								{
+									curList[i].horCount = curList.Count;
+								}else
+								{
+									curList[i].verCount = curList.Count;
+								}
+								
+							}
+
+							groupList.Add (curList);
+							
+						}
 					
+						curList = new List<Grid> ();
+						if (curGrid.isBombable ()) {
+							curList.Add (curGrid);
+						}
+						
+						
+					}
+						
 				}
+					
 
-				if (matchGrids.Count >= 2) 
+			}
+						
+			if (curList.Count >= countMin) {
+				for(int i  = 0 ; i < curList.Count; ++i)
 				{
-					horizontalList.Add(matchGrids);
-
-					if (nextCol  < ActiveMaxCol) 
+					if (isHorizon) 
 					{
-						curCol = nextCol ;
+						curList[i].horCount = curList.Count;
 					}else
 					{
-						curCol = 0;
-						curRow++;
-						if (curRow >= ActiveMaxRow) {
-							break;
-						}
+						curList[i].verCount = curList.Count;
 					}
-
-
+					
 				}
-
-			}
+				groupList.Add (curList);
 			
+			}
 		}
 
-		return horizontalList;
+
+
+		return groupList;
 	}
 
-	List<List<Grid>> getVerticalMatchedList()
+
+
+	void FindKeyGrids(List<List<Grid>> candidateList,List<Grid>finalList)
 	{
-		List<List<Grid>> verticalList = new List<List<Grid>>();
-		for (int curCol = ActiveMinCol; curCol < ActiveMaxCol; ++curCol) 
+		for(int i = 0; i <candidateList.Count; i ++)
 		{
-			for (int curRow = ActiveMinRow ; curRow < ActiveMaxRow; ++curRow) 
+
+			int maxValueIndex = 0;
+			int curMaxValue = 0;
+			for(int j = 0 ; j < candidateList[i].Count; j++)
 			{
-				var curGrid = mainGrids[curRow,curCol];
-				if (!curGrid.isBombable()) 
+
+				int curValue = candidateList[i][j].SumCount();
+				if (curValue > curMaxValue) 
 				{
-					continue;
+					curMaxValue = curValue;
+					maxValueIndex = j;
+					
 				}
-
-				int nextRow = curRow ;
-				List<Grid> matchGrids = new List<Grid>();
-				while (curCol < ActiveMaxCol && nextRow < ActiveMaxRow && 
-					mainGrids[curRow,curCol].isMatchColor(mainGrids[nextRow,curCol]) &&
-				 	mainGrids[nextRow,curCol].isBombable())
-		           {
-		               matchGrids.Add(mainGrids[nextRow,curCol]);
-		               nextRow ++;
-		           }
-		           
-		           if (matchGrids.Count >= 2) {
-		               //符合消除条件
-					verticalList.Add(matchGrids);
-		               //更新坐标
-		               if (nextRow + 1 < ActiveMaxRow) {
-		                   curRow = nextRow + 1;
-		               }else
-		               {
-		                   curRow = 0;
-
-		                   curCol ++;
-						if (curCol >= ActiveMaxCol) {
-							break;
-						}
-		                   
-		               }
-		           }
-
-
 			}
-			
+
+			finalList.Add(candidateList[i][maxValueIndex]);
 		}
-		return verticalList;
-
 	}
-
-
-
-	void TryAddSameColor(Grid curGrid,List<Grid> curList)
-	{
-		//up
-		var upGrid = mainGrids[curGrid.Row + 1,curGrid.Col];
-		//left
-		//right
-		//down
-	}
-
-
-
-
-
 
 	void CheckCollapse()
 	{
@@ -628,70 +641,55 @@ public class MainManager : MonoBehaviour {
 		// _state = GameState.Collapsing;
 
 		//横向遍历 找到所有匹配项
-		List<List<Grid>> horizontalList = getHorizontalMatchedList();
-		List<List<Grid>> verticalList 	= getVerticalMatchedList();
+		List<List<Grid>> horizontalList = getMatchList(true);
+		List<List<Grid>> verticalList 	= getMatchList(false);
 
-		for (int i = 0; i < horizontalList.Count; ++i) {
-			float sca = 0.8f - i * 0.1f;
-			for (int j = 0; j < horizontalList [i].Count; ++j) {
-				var curGrid = horizontalList [i] [j];
-				curGrid.ScaleCell (sca);
-				
-			}
-		}
+		List<Grid> finalKeyList = new List<Grid>();
 
-		return;
+		FindKeyGrids(horizontalList,finalKeyList);
+		FindKeyGrids(verticalList,finalKeyList);
 
-		List<List<Grid>> finalList = new List<List<Grid>>();
+		finalKeyList = finalKeyList.Distinct().ToList();
 
-
-		for(int i = 0; i < horizontalList.Count ;i++)
+		bool isCollapse = false;
+		for(int i = 0 ; i < finalKeyList.Count; i ++)
 		{
-			bool isAdded = false;
-			for(int j = 0; j < verticalList.Count ; j++)
+			var curGrid = finalKeyList[i];
+
+			List<Grid> elimList;
+			BombType genBombType;
+
+			bool isElim = TryElim(curGrid,out elimList,out genBombType);
+			if (isElim) 
 			{
-				if (HasSameGrid(horizontalList[i],verticalList[j])) 
-				{
-					horizontalList[i].AddRange(verticalList[j]);
-					verticalList.RemoveAt(j);
-					break;
-					// List<Grid> mergedList = new List<Grid> ();
-					// mergedList.AddRange (horizontalList [i]);
-					// mergedList.AddRange (verticalList [j]);
-
-					// finalList.Add(mergedList);	
-				}
-				// else
-				// {
-				// 	if (!isAdded) 
-				// 	{
-				// 		isAdded = true;
-				// 		finalList.Add(horizontalList[i]);
-				// 	}
-
-				// }
+				isCollapse = true;
+				ElimGridListAndGenBomb(elimList,curGrid,genBombType);
 			}
+
+
 		}
 
-		finalList = horizontalList;
 
-		Debug.Log("cout fin " + finalList.Count);
-		for(int i = 0 ; i < finalList.Count;i++)
+		if (isCollapse) {
+			mainGrids.DropCell (Constants.FORM_TIME + 0.1f);
+			mainGrids.DropNewCells (Constants.FORM_TIME + 0.1f);
+		}
+
+		ResetAllGridCount();
+
+		
+
+	}
+
+	void ResetAllGridCount()
+	{
+		for(int curRow = ActiveMinRow; curRow < ActiveMaxRow ; ++curRow)
 		{
-			float ranScale = 0.1f * (i + 1f);
-			Debug.Log ("ffff c" + finalList[i].Count);
-
-			for(int j = 0 ; j < finalList[i].Count;j++)
+			for(int curCol = ActiveMinCol; curCol < ActiveMaxCol ; ++ curCol)
 			{
-				var curGrid = finalList[i][j];
-				Debug.Log("row " + curGrid.Row + "col "+ curGrid.Col);
-				curGrid.ScaleCell(ranScale);
-
+				mainGrids[curRow,curCol].ResetCount();
 			}
-
-			 
 		}
-
 	}
 
 

@@ -107,6 +107,39 @@ public class Grid : MonoBehaviour {
 		return false;
 	}
 
+	int _verCount = 0;
+	public int verCount{
+		set{
+			_verCount = value;
+		}
+		get
+		{
+			return _verCount;
+		}
+	}
+
+	int _horCount = 0;
+	public int horCount{
+		set{
+			_horCount = value;
+
+		}
+		get{
+			return _horCount;
+		}
+	}
+
+	public void ResetCount()
+	{
+		_verCount = 0;
+		_horCount = 0;
+	}
+
+	public int SumCount()
+	{
+		return _verCount + _horCount;
+	}
+
 	public void ScaleCell(float scale = 1.5f)
 	{
 		if (Cell) 

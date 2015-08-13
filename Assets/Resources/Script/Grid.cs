@@ -107,7 +107,16 @@ public class Grid : MonoBehaviour {
 		return false;
 	}
 
-	
+	public void ScaleCell(float scale = 1.5f)
+	{
+		if (Cell) 
+		{
+			Cell.transform.localScale = new Vector3(scale,scale,scale);
+
+			
+		}
+	}
+
 	public bool isEmpty()
 	{
 		return Cell == null ? true: false;

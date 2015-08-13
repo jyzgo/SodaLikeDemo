@@ -531,9 +531,9 @@ public class MainManager : MonoBehaviour {
 				{
 					horizontalList.Add(matchGrids);
 
-					if (nextCol + 1 < ActiveMaxCol) 
+					if (nextCol  < ActiveMaxCol) 
 					{
-						curCol = nextCol + 1;
+						curCol = nextCol ;
 					}else
 					{
 						curCol = 0;
@@ -625,65 +625,97 @@ public class MainManager : MonoBehaviour {
 			return;
 		}
 
-		List<List<Grid>> sameColorCollections = new List<List<Grid>>();
-
-
-		for (int curRow = ActiveMinRow; curRow < ActiveMaxRow; ++curRow) 
-		{
-			for (int curCol = ActiveMinCol ; curCol < ActiveMaxCol; ++curCol) 
-			{
-				//查找所有连续颜色在两个以上的集合
-				//四个方向找
-				var curGrid = mainGrids[curRow,curCol];
-				var gridList = new List<Grid>();
-				if (!curGrid.isBombable()) 
-				{
-					continue;
-				}
-				TryAddSameColor(curGrid,gridList);
-
-			}
-		}
-
-		return;
-
-
 		// _state = GameState.Collapsing;
 
 		//横向遍历 找到所有匹配项
 		List<List<Grid>> horizontalList = getHorizontalMatchedList();
 		List<List<Grid>> verticalList 	= getVerticalMatchedList();
 
-//		Debug.Log("hor count "+ horizontalList.Count);
-//		Debug.Log("ver count "+ verticalList.Count);
+		for (int i = 0; i < horizontalList.Count; ++i) {
+			float sca = 0.8f - i * 0.1f;
+			for (int j = 0; j < horizontalList [i].Count; ++j) {
+				var curGrid = horizontalList [i] [j];
+				curGrid.ScaleCell (sca);
+				
+			}
+		}
 
-		List<List<Grid>> finalKeyList = new List<List<Grid>>();
+		return;
+
+		List<List<Grid>> finalList = new List<List<Grid>>();
 
 
 		for(int i = 0; i < horizontalList.Count ;i++)
 		{
+			bool isAdded = false;
 			for(int j = 0; j < verticalList.Count ; j++)
 			{
-				if(mergeMatchPatten(horizontalList[i],verticalList[j],finalKeyList))
+				if (HasSameGrid(horizontalList[i],verticalList[j])) 
 				{
-					// verticalList.Remove(verticalList[j]);
-					// break;
-				}
+					horizontalList[i].AddRange(verticalList[j]);
+					verticalList.RemoveAt(j);
+					break;
+					// List<Grid> mergedList = new List<Grid> ();
+					// mergedList.AddRange (horizontalList [i]);
+					// mergedList.AddRange (verticalList [j]);
 
+					// finalList.Add(mergedList);	
+				}
+				// else
+				// {
+				// 	if (!isAdded) 
+				// 	{
+				// 		isAdded = true;
+				// 		finalList.Add(horizontalList[i]);
+				// 	}
+
+				// }
 			}
 		}
 
-		for(int i = 0 ; i < finalKeyList.Count ;i++)
+		finalList = horizontalList;
+
+		Debug.Log("cout fin " + finalList.Count);
+		for(int i = 0 ; i < finalList.Count;i++)
 		{
-			
+			float ranScale = 0.1f * (i + 1f);
+			Debug.Log ("ffff c" + finalList[i].Count);
+
+			for(int j = 0 ; j < finalList[i].Count;j++)
+			{
+				var curGrid = finalList[i][j];
+				Debug.Log("row " + curGrid.Row + "col "+ curGrid.Col);
+				curGrid.ScaleCell(ranScale);
+
+			}
+
+			 
 		}
 
-
-
-
-
-		
 	}
+
+
+
+	bool HasSameGrid(List<Grid> horizonList, List<Grid> verticalList)
+	{
+		bool isMerged = false;
+		for(int i = 0; i < horizonList.Count ;++i)
+		{
+			for(int j = 0 ; j < verticalList.Count; ++j)
+			{
+				if (horizonList[i] == verticalList[j]) 
+				{
+					return true;
+					
+				}
+			}
+		}
+		return false;
+
+
+	}
+
+
 
 	bool mergeMatchPatten(List<Grid> horizonList ,List<Grid> verticalList,List<List<Grid>> finalKeyList)
 	{

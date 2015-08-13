@@ -81,10 +81,10 @@ public class Grid : MonoBehaviour {
 	public int verticalCount {
 		set{
 			_verticalCount = value;
-			if (value != 0) 
-			{
-				Cell.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
-			}
+			// if (value != 0) 
+			// {
+			// 	Cell.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
+			// }
 		}
 		get{
 			return _verticalCount;
@@ -95,10 +95,10 @@ public class Grid : MonoBehaviour {
 	public int horizonCount {
 		set{
 			_horzonCount = value;
-			if (value != 0) 
-			{
-				Cell.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
-			}
+			// if (value != 0) 
+			// {
+			// 	Cell.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
+			// }
 		}
 		get{
 			return _horzonCount;
@@ -106,6 +106,11 @@ public class Grid : MonoBehaviour {
 	}
 	public bool isCenter = false;
 	public int mPriority = 0;
+
+	public BombType mGenBomb = BombType.None;
+
+	public List<Grid> horizonList;
+	public List<Grid> verticalList;
 
 	public void MoveToAndElim(Grid g,float moveTime)
 	{

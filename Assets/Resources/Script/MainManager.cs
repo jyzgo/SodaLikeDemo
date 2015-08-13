@@ -267,7 +267,19 @@ public class MainManager : MonoBehaviour {
 			PlayBackAction();
 		} else {
 
-			var horizonList = getMatchList(false);
+			var horizonList = getMatchList(true);
+			var verticalList = getMatchList(false);
+
+			for(int i = 0 ; i < horizonList.Count; i ++)
+			{
+				for(int j = 0 ; j < horizonList[i].Count; j ++)
+				{
+					if (horizonList[i][j].verticalCount >= 3) 
+					{
+						
+					}
+				}
+			}
 
 
 

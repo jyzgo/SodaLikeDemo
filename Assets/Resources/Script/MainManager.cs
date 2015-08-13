@@ -746,12 +746,17 @@ public class MainManager : MonoBehaviour {
 
 	GameObject gridManager;
 
+	GameObject bombManager;
+
 	void Start()
 	{
 		LevelMaxRow = Constants.MAX_ROWS;
 		LevelMaxCol = Constants.MAX_COLS;
 		gridManager = new GameObject("GridsManager");
 		gridManager.AddComponent<GridsManager>();
+
+		bombManager = new GameObject("BombManager");
+		bombManager.AddComponent<BombManager>();
 
 
 		mainGrids = gridManager.GetComponent<GridsManager>();

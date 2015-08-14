@@ -53,8 +53,32 @@ public class CellScript : MonoBehaviour {
 		transform.position = new Vector3(curPos.x,curPos.y,Zorder.cell);
 	}
 
+	bool _updating = false;
+	public bool IsUpdating{
+		private set
+		{
+			_updating = value;
+		}
+		get{
+			return _updating;
+		}
+	}
+
+	bool _isTriggering = false;
+	public bool IsTriggering{
+		set
+		{
+			_isTriggering = value;
+		}
+		get
+		{
+			return _isTriggering;
+		}
+	}
+
 	public void updateCell(float delayTime = 0f)
 	{
+		_updating = true;
 		string spritePath = _cellType.ToString() +_cellBombType.ToString()+ _cellColor.ToString();
 
 		Sprite newSprite = Resources.Load("Sprite/Cells/"+spritePath,typeof(Sprite)) as Sprite;
@@ -66,6 +90,7 @@ public class CellScript : MonoBehaviour {
 	IEnumerator DoUpdateCell(float delayTime)
 	{
 		yield return new WaitForSeconds(delayTime);
+		_updating = false;
 		if (_cellColor != CellColor.None && _cellType != CellType.None) {
 
 
@@ -121,28 +146,36 @@ public class CellScript : MonoBehaviour {
 	int targetRow;
 	int targetCol;
 
-	bool canMove = false;
+	bool _isMoving = false;
+	public bool IsMoving {
+		private set{ 
+			_isMoving = value;
+		}
+		get
+		{
+			return _isMoving;
+		}
+	}
 
 	Vector3 targetPosition;
-	float moveToTargetTime;
+
 	float startMoveTime;
 	float moveLength;
 
 	const float speed = 10;
 
-	void FixedUpdate()
+	void Update()
 	{
-		if(canMove)
+		if(_isMoving)
 		{
 			float distCoverd = (Time.time - startMoveTime)* speed;
 			float fracJourney = distCoverd/moveLength;
-
 
 		    transform.position=Vector3.Lerp(transform.position,targetPosition,fracJourney);//移动到指定位置
 			
 			if (transform.position == targetPosition) 
 			{
-				canMove = false;
+				_isMoving = false;
 				MainManager.instance.RemoveMovingCell(this);
 				
 			}
@@ -158,9 +191,9 @@ public class CellScript : MonoBehaviour {
 	}
 
 	const float elimScale = 0.1f;
-	float _scaleTime ;
+
 	bool _canScale = false;
-	float _startScaleTime =0f;
+
 	float _scaleSpeed = 0f;
 
 	public void PlayElimAnim(float t)
@@ -175,9 +208,21 @@ public class CellScript : MonoBehaviour {
 
 		_scaleSpeed = Mathf.Abs((targetScale - oriScale))/t;
 
-		_scaleTime = t;
+
 		_canScale = true;
 
+	}
+
+	bool _bombing = false;
+	public bool IsBombing
+	{
+		set{
+			_bombing = value;
+		}
+		
+		get{
+			return _bombing;
+		}
 	}
 
 	void OnDestroy()
@@ -192,7 +237,7 @@ public class CellScript : MonoBehaviour {
 
 	public void MoveTo(int row,int col,float moveTime = 0f)
 	{
-		moveToTargetTime = moveTime;
+
 		startMoveTime = Time.time;	
 
 		cellRow = row;
@@ -204,7 +249,7 @@ public class CellScript : MonoBehaviour {
 		                             Constants.CELLS_BOTTOM + row * Constants.CELL_SIDE,
 		                             Zorder.cell);
 		moveLength = Vector3.Distance(transform.position, targetPosition);
-		canMove = true;
+		_isMoving = true;
 
 		MainManager.instance.AddMovingCell(this);
 

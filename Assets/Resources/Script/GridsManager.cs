@@ -169,17 +169,7 @@ public class GridsManager:MonoBehaviour  {
 
 	}
 	
-	public bool Destroy(int row,int col,float t = 0f)
-	{
-		var grid = cellGrids[row][col];
-		if (grid.Cell == null) 
-		{
-			return false;
-		}
-		grid.DestroyCell(t);
-		return true;
 
-	}
 
 	GameObject _gridHolder;
 
@@ -245,13 +235,7 @@ public class GridsManager:MonoBehaviour  {
 			if (_instance == null)
 			{
 				_instance = Object.FindObjectOfType(typeof(GridsManager)) as GridsManager;
- 
-				if (_instance == null)
-				{
-					GameObject go = new GameObject("_GridManager");
-					DontDestroyOnLoad(go);
-					_instance = go.AddComponent<GridsManager>();
-				}
+
 			}
 			return _instance;
 		}

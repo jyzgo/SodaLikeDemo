@@ -78,17 +78,43 @@ public class Grid : MonoBehaviour {
 		return true;
 	}
 
+
+
+	public bool allowElim()
+	{
+		return Cell && !Cell.IsMoving && !Cell.IsBombing && !Cell.IsUpdating;
+	}
+
 	public void MoveToAndElim(Grid g,float moveTime)
 	{
-		if (g && Cell) 
+
+		if (g && Cell && allowElim()) 
 		{
-			Cell.MoveTo(g.Row,g.Col,moveTime);
+			if (Cell.cellBombType == BombType.None) 
+			{
+				Cell.MoveTo(g.Row,g.Col,moveTime);
+				
+			}
 			DestroyCell (moveTime);
+			
+			
 
 			
 		}
 	}
 
+	public BombType bombType
+	{
+
+		get{
+			if (!Cell) 
+			{
+				return BombType.None;
+			}
+
+			return Cell.cellBombType;
+		}
+	}
 	public bool isMatchColor(Grid oth)
 	{
 		if (oth == null) 
@@ -157,11 +183,22 @@ public class Grid : MonoBehaviour {
 	
 	public void DestroyCell(float t = 0f,bool isPlayElim = false)
 	{
-		if (Cell != null) 
+		if (Cell != null ) 
 		{
 			if (isPlayElim) 
 			{
 				Cell.PlayElimAnim(t);
+			}
+
+			if (Cell.cellBombType != BombType.None) 
+			{
+				// Cell.IsBombing = true;
+			}
+
+			if(!Cell.IsTriggering)
+			{
+				Cell.IsTriggering = true;
+				BombManager.instance.triggerBomb(this);
 			}
 			
 			Destroy(Cell.gameObject,t);
@@ -205,6 +242,48 @@ public class Grid : MonoBehaviour {
 			gridMgr.DropNewCells (Constants.FORM_TIME + 0.1f);
 			
 			return;
+		}
+
+		if (MainManager.instance._debugTool == DebugTools.FormBomb) 
+		{
+			Debug.Log("form ");
+			BombType bombType = BombType.None; 
+
+
+			if (Input.GetKey("1")) 
+			{
+				bombType = BombType.None;
+			}else if (Input.GetKey("2")) {
+				bombType = BombType.Horizontal;
+			}else if (Input.GetKey("3")) {
+				bombType = BombType.Vertical;
+			}else if (Input.GetKey("4")) {
+				bombType = BombType.Square;
+			}else if (Input.GetKey("5")) {
+				bombType = BombType.Fish;
+			}else if (Input.GetKey("6")) {
+				bombType = BombType.Color;
+			}else if (Input.GetKey("7")) {
+				bombType = BombType.Coloring;
+			}
+
+			if (Cell) 
+			{
+				if (bombType == BombType.None) 
+				{
+					Cell.cellType = CellType.Brick;
+				}else
+				{
+					Cell.cellType = CellType.Bomb;
+				}
+				
+				Cell.cellBombType = bombType;
+				Cell.updateCell();
+			}
+
+
+			return;
+			
 		}
 
 		isBeSelected = true;

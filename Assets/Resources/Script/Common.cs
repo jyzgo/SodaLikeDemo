@@ -47,8 +47,8 @@ public enum GridMark
 
 public struct GridDir 
 {
-	int offsetRow;
-	int offsetCol;
+	public int offsetRow;
+	public int offsetCol;
 	public GridDir(int curRow,int curCol)
 	{
 		offsetRow = curRow;
@@ -78,7 +78,7 @@ public static class Constants
 	public const float SWAP_TIME = 0.3f;
 	public const float FORM_TIME = 0.33f;
 
-	public const float CELL_ELIM_TIME = 0.33f;
+	public const float CELL_ELIM_TIME = 0.13f;
 
 	public const int CORLOR_NUM = 5;
 

@@ -3,7 +3,8 @@ using System.Collections;
 
 public enum DebugTools{
 	None,
-	Spoon
+	Spoon,
+	FormBomb,
 }
 
 public class DebugConf : MonoBehaviour {

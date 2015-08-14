@@ -61,7 +61,7 @@ public class MainManager : MonoBehaviour {
 		}
 
 
-		if (nextRow < ActiveMinRow || nextRow >= ActiveMaxRow || nextCol < ActiveMinCol || nextCol >= ActiveMaxCol) 
+		if (!IsInBorder(nextRow,nextCol)) 
 		{
 			return false;
 			
@@ -360,6 +360,11 @@ public class MainManager : MonoBehaviour {
 			}
 
 		} else {
+			if (g.bombType != BombType.None) 
+			{
+				BombManager.instance.triggerBomb(g);
+			}
+
 			g.Cell.cellType = CellType.Bomb;
 			g.Cell.cellBombType = genBomb;
 			g.Cell.highZorder();
@@ -373,6 +378,16 @@ public class MainManager : MonoBehaviour {
 
 
 	}
+
+	public bool IsInBorder(int curRow,int curCol)
+	{
+		if(curRow >= ActiveMaxRow || curCol >= ActiveMaxCol || curRow <ActiveMinRow ||curCol < ActiveMinCol)
+		{
+			return false;
+		}
+		return true;
+	}
+
 	void CheckSameColorAndAdd(Grid g,int offRow,int offCol,List<Grid> curList)
 	{
 
@@ -387,7 +402,7 @@ public class MainManager : MonoBehaviour {
 
 //			Debug.Log ("nextRow "+ nextRow + "nextCol " +nextCol);
 
-			if(nextRow >= ActiveMaxRow || nextCol >= ActiveMaxCol || nextRow <ActiveMinRow ||nextCol < ActiveMinCol)
+			if(!IsInBorder(nextRow,nextCol))
 			{
 				return;
 			}
@@ -409,6 +424,7 @@ public class MainManager : MonoBehaviour {
 
 
 
+	// public GameObject cell
 	public GameObject CreateCell()
 	{
 
@@ -453,6 +469,13 @@ public class MainManager : MonoBehaviour {
 	{
 		private set;
 		get;
+	}
+
+	public int MaxLength()
+	{
+
+		return LevelMaxRow > LevelMaxCol ? LevelMaxRow : LevelMaxCol;
+		
 	}
 
 	public int LevelMaxRow
@@ -696,7 +719,6 @@ public class MainManager : MonoBehaviour {
 
 	bool HasSameGrid(List<Grid> horizonList, List<Grid> verticalList)
 	{
-		bool isMerged = false;
 		for(int i = 0; i < horizonList.Count ;++i)
 		{
 			for(int j = 0 ; j < verticalList.Count; ++j)
@@ -836,13 +858,6 @@ public class MainManager : MonoBehaviour {
 			{
 				_instance = Object.FindObjectOfType(typeof(MainManager)) as MainManager;
 	
-				if (_instance == null)
-				{
-					// GameObject go = new GameObject("_MainManager");
-					// DontDestroyOnLoad(go);
-					// _instance = go.AddComponent<MainManager>();
-
-				}
 			}
 			return _instance;
 		}
@@ -879,6 +894,21 @@ public class MainManager : MonoBehaviour {
 			}
 			
 		}
+		if (GUILayout.Button ("FormBomb")) 
+		{
+			
+			if (_debugTool != DebugTools.FormBomb) 
+			{
+				_debugTool = DebugTools.FormBomb;
+				Debug.Log ("FormBomb On");
+			}else
+			{
+				_debugTool = DebugTools.None;
+				Debug.Log ("FormBomb Off");
+			}
+			
+		}
+
 	}
 
 

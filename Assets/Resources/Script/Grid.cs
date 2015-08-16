@@ -85,7 +85,7 @@ public class Grid : MonoBehaviour {
 		return Cell && !Cell.IsMoving && !Cell.IsBombing && !Cell.IsUpdating;
 	}
 
-	public void MoveToAndElim(Grid g,float moveTime)
+	public void MoveToAndElim(Grid g,float moveTime,Grid triggerGrid)
 	{
 
 		if (g && Cell && allowElim()) 
@@ -95,7 +95,7 @@ public class Grid : MonoBehaviour {
 				Cell.MoveTo(g.Row,g.Col,moveTime);
 				
 			}
-			DestroyCell (moveTime);
+			DestroyCell (moveTime,false,triggerGrid);
 			
 			
 
@@ -181,19 +181,15 @@ public class Grid : MonoBehaviour {
 		return Cell == null ? true: false;
 	}
 	
-	public void DestroyCell(float t = 0f,bool isPlayElim = false)
+	public void DestroyCell(float t = 0f,bool isPlayElim = false,Grid triggerGrid = null)
 	{
-		if (Cell != null ) 
+		if (Cell != null && Cell.gameObject != null) 
 		{
 			if (isPlayElim) 
 			{
 				Cell.PlayElimAnim(t);
 			}
 
-			if (Cell.cellBombType != BombType.None) 
-			{
-				// Cell.IsBombing = true;
-			}
 
 			if(!Cell.IsTriggering)
 			{
@@ -201,8 +197,12 @@ public class Grid : MonoBehaviour {
 				BombManager.instance.triggerBomb(this);
 			}
 			
-			Destroy(Cell.gameObject,t);
-			Cell = null;
+			if (Cell && Cell.gameObject) 
+			{
+				Destroy(Cell.gameObject,t);
+				Cell = null;
+			}
+
 
 		}
 	}
@@ -237,7 +237,7 @@ public class Grid : MonoBehaviour {
 		if(MainManager.instance._debugTool == DebugTools.Spoon)
 		{
 			var gridMgr = (GameObject.Find("GridsManager")).GetComponent<GridsManager>();
-			DestroyCell(Constants.CELL_ELIM_TIME,true);
+			DestroyCell(Constants.CELL_ELIM_TIME,true,null);
 			gridMgr.DropCell (Constants.FORM_TIME + 0.1f);
 			gridMgr.DropNewCells (Constants.FORM_TIME + 0.1f);
 			
@@ -297,13 +297,6 @@ public class Grid : MonoBehaviour {
 				bombType = BombType.Coloring;
 			}
 
-			
-			
-			
-			
-			
-			
-			
 
 			if (Cell) 
 			{
@@ -321,6 +314,13 @@ public class Grid : MonoBehaviour {
 				}
 				
 				Cell.cellBombType = bombType;
+
+				if (bombType == BombType.Color) 
+				{
+					Cell.cellColor = CellColor.All;
+					
+				}
+
 				Cell.updateCell();
 			}
 

@@ -149,6 +149,14 @@ public class MainManager : MonoBehaviour {
 
 	void CheckMatch(Grid l ,Grid r)
 	{
+
+		if (l.bombType == BombType.Color || r.bombType == BombType.Color) 
+		{
+			BombManager.instance
+			return;
+			
+		}
+
 		if (l.isMatchColor (r)) {
 			//same color no need check ,just back
 			PlayBackAction();
@@ -352,10 +360,10 @@ public class MainManager : MonoBehaviour {
 		}
 
 		if (genBomb == BombType.None) {
-			g.DestroyCell (Constants.CELL_ELIM_TIME,true);
+			g.DestroyCell (Constants.CELL_ELIM_TIME,true,g);
 			for (int i = 0; i < lst.Count; ++i) {
 				Grid curGrid = lst [i];
-				curGrid. DestroyCell(Constants.CELL_ELIM_TIME,true);
+				curGrid. DestroyCell(Constants.CELL_ELIM_TIME,true,g);
 
 			}
 
@@ -367,6 +375,13 @@ public class MainManager : MonoBehaviour {
 
 			g.Cell.cellType = CellType.Bomb;
 			g.Cell.cellBombType = genBomb;
+
+			if (g.bombType == BombType.Color) 
+			{
+				g.Cell.cellColor = CellColor.All;
+				
+			}
+
 			g.Cell.highZorder();
 			g.Cell.updateCell (Constants.FORM_TIME);
 			for (int i = 0; i < lst.Count; ++i) {

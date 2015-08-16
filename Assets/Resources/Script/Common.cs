@@ -9,7 +9,8 @@ public enum CellColor {
 	Green = 3,
 	Brown = 4,
 	Purple = 5,
-	Yellow = 6
+	Yellow = 6,
+	All
 };
 
 public enum GameState

@@ -33,18 +33,37 @@ public class BombManager : MonoBehaviour {
 	{
 		int curRow = originRow + offsetRow;
 		int curCol = originCol + offsetCol;
+		var triggerGrid = GridsManager.instance[originRow,originCol];
 		int curDistance = 0;
 		while (MainManager.instance.IsInBorder(curRow,curCol) && curDistance < distance) 
 		{
 			var curGrid = GridsManager.instance[curRow,curCol];
 			if (curGrid) 
 			{
-				curGrid.DestroyCell(Constants.CELL_ELIM_TIME,true);
+				curGrid.DestroyCell(Constants.CELL_ELIM_TIME,true,triggerGrid);
 			}
 
 			curRow += offsetRow;
 			curCol += offsetCol;
 			curDistance +=1;
+			
+		}
+
+	}
+
+	void ColorBombTrigger(Grid bombGrid,Grid triggerGrid)
+	{
+		UpdateBorder();
+		for (int curRow = _activeMinRow ; curRow < _activeMaxRow; ++curRow) 
+		{
+			for (int curCol = _activeMinCol; curCol < _activeMaxCol; ++curCol) 
+			{
+				var curGrid = GridsManager.instance[curRow,curCol];
+				if (curGrid && curGrid != bombGrid &&curGrid.isBombable() && curGrid.isMatchColor(bombGrid)) 
+				{
+					curGrid.DestroyCell(Constants.CELL_ELIM_TIME,true,triggerGrid);
+				}
+			}
 			
 		}
 
@@ -92,9 +111,13 @@ public class BombManager : MonoBehaviour {
 		else if(bombCell.cellBombType == BombType.Fish)
 		{}
 		else if(bombCell.cellBombType == BombType.Color)
-		{}
+		{
+			ColorBombTrigger(bombGrid);
+		}
 		else if(bombCell.cellBombType == BombType.Coloring)
-		{}
+		{
+
+		}
 
 
 

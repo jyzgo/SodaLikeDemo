@@ -247,25 +247,63 @@ public class Grid : MonoBehaviour {
 		if (MainManager.instance._debugTool == DebugTools.FormBomb) 
 		{
 			Debug.Log("form ");
-			BombType bombType = BombType.None; 
+			BombType bombType = BombType.None;
+			CellColor curColor = CellColor.None; 
 
+			// None = 0,
+			// Red  = 1,
+			// Blue = 2,
+			// Green = 3,
+			// Brown = 4,
+			// Purple = 5,
+			// Yellow = 6
 
 			if (Input.GetKey("1")) 
 			{
-				bombType = BombType.None;
+				curColor = CellColor.Red;
+				
 			}else if (Input.GetKey("2")) {
-				bombType = BombType.Horizontal;
+				curColor = CellColor.Blue;
+				
 			}else if (Input.GetKey("3")) {
-				bombType = BombType.Vertical;
+				curColor = CellColor.Green;
+				
 			}else if (Input.GetKey("4")) {
-				bombType = BombType.Square;
+				curColor = CellColor.Brown;
+				
 			}else if (Input.GetKey("5")) {
-				bombType = BombType.Fish;
+				curColor = CellColor.Purple;
+				
 			}else if (Input.GetKey("6")) {
+				curColor = CellColor.Yellow;
+				
+			}
+
+
+			if (Input.GetKey("q")) 
+			{
+				bombType = BombType.None;
+			}else if (Input.GetKey("w")) {
+				bombType = BombType.Horizontal;
+			}else if (Input.GetKey("e")) {
+				bombType = BombType.Vertical;
+			}else if (Input.GetKey("r")) {
+				bombType = BombType.Square;
+			}else if (Input.GetKey("a")) {
+				bombType = BombType.Fish;
+			}else if (Input.GetKey("s")) {
 				bombType = BombType.Color;
-			}else if (Input.GetKey("7")) {
+			}else if (Input.GetKey("d")) {
 				bombType = BombType.Coloring;
 			}
+
+			
+			
+			
+			
+			
+			
+			
 
 			if (Cell) 
 			{
@@ -275,6 +313,11 @@ public class Grid : MonoBehaviour {
 				}else
 				{
 					Cell.cellType = CellType.Bomb;
+				}
+
+				if (curColor != CellColor.None) 
+				{
+					Cell.cellColor = curColor;
 				}
 				
 				Cell.cellBombType = bombType;

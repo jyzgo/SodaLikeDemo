@@ -79,10 +79,7 @@ public class CellScript : MonoBehaviour {
 	public void updateCell(float delayTime = 0f)
 	{
 		_updating = true;
-		string spritePath = _cellType.ToString() +_cellBombType.ToString()+ _cellColor.ToString();
 
-		Sprite newSprite = Resources.Load("Sprite/Cells/"+spritePath,typeof(Sprite)) as Sprite;
-		GetComponent<SpriteRenderer>().sprite = newSprite;
 		StartCoroutine(DoUpdateCell(delayTime));
 
 	}
@@ -91,6 +88,10 @@ public class CellScript : MonoBehaviour {
 	{
 		yield return new WaitForSeconds(delayTime);
 		_updating = false;
+		string spritePath = _cellType.ToString() +_cellBombType.ToString()+ _cellColor.ToString();
+
+		Sprite newSprite = Resources.Load("Sprite/Cells/"+spritePath,typeof(Sprite)) as Sprite;
+		GetComponent<SpriteRenderer>().sprite = newSprite;
 		if (_cellColor != CellColor.None && _cellType != CellType.None) {
 
 
@@ -233,6 +234,8 @@ public class CellScript : MonoBehaviour {
 		}
 
 	}
+
+
 
 
 	public void MoveTo(int row,int col,float moveTime = 0f)

@@ -147,15 +147,19 @@ public class MainManager : MonoBehaviour {
 
 	}
 
+
+
 	void CheckMatch(Grid l ,Grid r)
 	{
 
-		if (l.bombType == BombType.Color || r.bombType == BombType.Color) 
+		if (BombManager.instance.MatchBomb(l,r)) 
 		{
-			BombManager.instance
+			mainGrids.DropCell (Constants.FORM_TIME + 0.1f);
+			mainGrids.DropNewCells (Constants.FORM_TIME + 0.1f);
 			return;
-			
 		}
+
+
 
 		if (l.isMatchColor (r)) {
 			//same color no need check ,just back
@@ -370,9 +374,13 @@ public class MainManager : MonoBehaviour {
 		} else {
 			if (g.bombType != BombType.None) 
 			{
-				BombManager.instance.triggerBomb(g);
+				BombManager.instance.triggerBomb(g,g);
 			}
 
+
+			if (!g.Cell) {
+				return;
+			}
 			g.Cell.cellType = CellType.Bomb;
 			g.Cell.cellBombType = genBomb;
 
@@ -386,7 +394,7 @@ public class MainManager : MonoBehaviour {
 			g.Cell.updateCell (Constants.FORM_TIME);
 			for (int i = 0; i < lst.Count; ++i) {
 				Grid curGrid = lst [i];
-				curGrid. MoveToAndElim(g,Constants.FORM_TIME);
+				curGrid. MoveToAndElim(g,Constants.FORM_TIME,g);
 
 			}
 		}
@@ -424,7 +432,7 @@ public class MainManager : MonoBehaviour {
 			Grid nextGrid = mainGrids[nextRow,nextCol];
 			curRow = nextRow;
 			curCol = nextCol;
-			if(g.isMatchColor(nextGrid))
+			if(g.isMatchColor(nextGrid) && g.Cell && nextGrid.Cell.cellBombType != BombType.Coloring)
 			{
 				curList.Add(nextGrid);
 

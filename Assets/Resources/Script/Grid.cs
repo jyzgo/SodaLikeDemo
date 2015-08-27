@@ -90,16 +90,13 @@ public class Grid : MonoBehaviour {
 
 		if (g && Cell && allowElim()) 
 		{
+			
 			if (Cell.cellBombType == BombType.None) 
 			{
 				Cell.MoveTo(g.Row,g.Col,moveTime);
 				
 			}
 			DestroyCell (moveTime,false,triggerGrid);
-			
-			
-
-			
 		}
 	}
 
@@ -183,7 +180,7 @@ public class Grid : MonoBehaviour {
 	
 	public void DestroyCell(float t = 0f,bool isPlayElim = false,Grid triggerGrid = null)
 	{
-		if (Cell != null && Cell.gameObject != null) 
+		if (Cell != null && Cell.gameObject != null ) 
 		{
 			if (isPlayElim) 
 			{
@@ -194,7 +191,7 @@ public class Grid : MonoBehaviour {
 			if(!Cell.IsTriggering)
 			{
 				Cell.IsTriggering = true;
-				BombManager.instance.triggerBomb(this);
+				BombManager.instance.triggerBomb(this,triggerGrid);
 			}
 			
 			if (Cell && Cell.gameObject) 
